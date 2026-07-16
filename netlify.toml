@@ -1,0 +1,14 @@
+# Sitio estático (index.html en la raíz) — sin build.
+[build]
+  publish = "."
+
+# Cache largo para el PDF; el HTML siempre fresco.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/*.pdf"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"

@@ -12,25 +12,33 @@ Curriculum vitae/
 
 ---
 
-## ⭐ Camino que estamos usando: GitHub → Vercel  (RECOMENDADO)
+## ⭐ Camino elegido: GitHub → Netlify  (auto-deploy)
 
 ✅ Ya está: el CV está en GitHub → https://github.com/MauricioLulusis/CurriculumVitae (rama `main`).
-Con esto, cada `git push` va a redesplegar el sitio en Vercel automáticamente.
+Conectando Netlify al repo, cada `git push` redespliega el sitio automáticamente.
 
-### 1) Crear cuenta en Vercel
-https://vercel.com → **Sign Up → Continue with GitHub** → autorizá con la cuenta **MauricioLulusis**.
+### 1) Crear cuenta en Netlify
+https://app.netlify.com → **Sign up** → **GitHub** → autorizá con la cuenta **MauricioLulusis**.
 
-### 2) Importar el repo
-1. Dashboard → **Add New… → Project**.
-2. En *Import Git Repository* buscá **CurriculumVitae** → **Import**.
-   *(Si no aparece: "Adjust GitHub App Permissions" → dale acceso al repo.)*
-3. **Framework Preset: Other** · Root Directory: `./` · sin build command.
-4. **Deploy** → en ~20s queda online en `https://curriculumvitae-xxxx.vercel.app`.
+### 2) Importar el repo y deployar
+1. **Add new site → Import an existing project → Deploy with GitHub**.
+2. Autorizá Netlify (si pide, elegí "Only select repositories" → **CurriculumVitae**).
+3. Configuración del build (es un sitio estático, NO necesita build):
+   - **Branch to deploy:** `main`
+   - **Build command:** *(vacío)*
+   - **Publish directory:** `.`  *(la raíz)*
+4. **Deploy site** → en segundos queda online en `https://<nombre-random>.netlify.app`.
+5. (Opcional) *Site configuration → Change site name* para elegir un subdominio lindo.
 
-### 3) Comprar el dominio en Vercel
-1. Proyecto → **Settings → Domains**.
-2. Escribí `mauriciolulusiscv.com` → si está libre, **Buy** (≈ US$15-20/año).
-3. Pagás → Vercel lo registra, lo asigna al proyecto y configura **DNS + HTTPS solos**. ✅
+### 3) Dominio propio
+En el sitio → **Domain management → Add a domain** → escribí `mauriciolulusiscv.com`:
+- **Si Netlify ofrece registrarlo** ahí mismo (*Register domain*), lo comprás y queda todo
+  configurado solo (DNS de Netlify + HTTPS automático). ✅
+- **Si no**, comprá el dominio en un registrador (Cloudflare ~US$9 / Namecheap ~US$11) y:
+  - Opción fácil: usá **Netlify DNS** → Netlify te da 4 *nameservers*; los pegás en el registrador.
+  - Opción manual: cargás un **A** `@` → `75.2.60.5` y un **CNAME** `www` → tu-sitio.netlify.app
+    *(usá siempre los valores que muestre Netlify).*
+- HTTPS: Netlify emite el certificado (Let's Encrypt) solo. ✅
 
 ### 4) Actualizar el sitio en el futuro
 ```bash
@@ -40,11 +48,11 @@ git add -A
 git commit -m "update cv"
 git push
 ```
-→ Vercel redespliega solo. 🚀
+→ Netlify redespliega solo. 🚀
 
 ---
 
-## ✅ Alternativa: TODO dentro de Vercel sin GitHub (comprar dominio + deploy)
+## ✅ Alternativa: TODO dentro de Vercel (comprar dominio + deploy)
 
 Sí — Vercel vende dominios. Comprás y publicás en el mismo lugar, y el **DNS + HTTPS quedan
 configurados solos** (no tocás ningún registro a mano). Es lo más simple posible.
