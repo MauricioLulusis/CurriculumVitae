@@ -1,0 +1,1853 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<title>Mauricio Lulusis · AI Engineer & Backend Engineer</title>
+<meta name="description" content="CV interactivo de Mauricio Lulusis — AI & Backend Engineer, Technical Lead I+D. Agentes, RAG, MCP y arquitecturas agentic sobre backend sólido y observable.">
+<meta name="author" content="Mauricio Nicolás Lulusis">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Mauricio Lulusis · AI Engineer">
+<meta property="og:description" content="CV interactivo diseñado como una consola de observabilidad de IA en vivo.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20100%20100'%3E%3Ctext%20y='.9em'%20font-size='88'%3E%E2%9A%A1%3C/text%3E%3C/svg%3E">
+</head>
+<body>
+<style>
+  /* ============================================================
+     TRACE — CV de Mauricio Lulusis
+     Concepto: consola de observabilidad de IA (spans, tokens,
+     orquestador -> subagentes) como identidad visual.
+     ============================================================ */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+  :root {
+    /* ---- tokens: tema oscuro (mundo primario) ---- */
+    --bg:        #0A0E17;
+    --bg-2:      #070A11;
+    --surface:   #111725;
+    --surface-2: #161D2E;
+    --surface-3: #1B2436;
+    --line:      #232C40;
+    --line-soft: #1A2233;
+    --text:      #E7EBF3;
+    --text-2:    #B4BDD0;
+    --muted:     #7E889E;
+    --faint:     #59637A;
+    --accent:      #FFB454;   /* ámbar señal */
+    --accent-soft: #FFB45422;
+    --accent-line: #FFB45455;
+    --accent-2:    #4FD6C9;   /* cian dato */
+    --accent-2-soft:#4FD6C922;
+    --good:      #5FD69B;
+    --crit:      #FF6B7B;
+    --grid:      #ffffff08;
+    --shadow:    0 24px 60px -28px rgba(0,0,0,.75);
+    --shadow-lg: 0 40px 120px -40px rgba(0,0,0,.85);
+
+    --font-mono: "JetBrains Mono","Cascadia Code",ui-monospace,"SF Mono",Menlo,Consolas,"Liberation Mono",monospace;
+    --font-sans: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+
+    --maxw: 1180px;
+    --r: 14px;
+    --r-sm: 9px;
+
+    color-scheme: dark;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme="dark"]) {
+      --bg:        #EEF1F8;
+      --bg-2:      #E4E9F3;
+      --surface:   #FFFFFF;
+      --surface-2: #F4F6FB;
+      --surface-3: #EAEEF7;
+      --line:      #D5DCEB;
+      --line-soft: #E2E7F1;
+      --text:      #131A28;
+      --text-2:    #3C465A;
+      --muted:     #5E6980;
+      --faint:     #8A93A8;
+      --accent:      #B26B00;
+      --accent-soft: #B26B0016;
+      --accent-line: #B26B0044;
+      --accent-2:    #0B7A78;
+      --accent-2-soft:#0B7A7815;
+      --good:      #0E8A54;
+      --crit:      #C6384A;
+      --grid:      #0a0f1e07;
+      --shadow:    0 24px 60px -30px rgba(20,30,60,.22);
+      --shadow-lg: 0 40px 120px -44px rgba(20,30,60,.26);
+      color-scheme: light;
+    }
+  }
+
+  /* toggle explícito gana en ambos sentidos */
+  :root[data-theme="light"] {
+    --bg:#EEF1F8; --bg-2:#E4E9F3; --surface:#FFFFFF; --surface-2:#F4F6FB; --surface-3:#EAEEF7;
+    --line:#D5DCEB; --line-soft:#E2E7F1; --text:#131A28; --text-2:#3C465A; --muted:#5E6980; --faint:#8A93A8;
+    --accent:#B26B00; --accent-soft:#B26B0016; --accent-line:#B26B0044; --accent-2:#0B7A78; --accent-2-soft:#0B7A7815;
+    --good:#0E8A54; --crit:#C6384A; --grid:#0a0f1e07;
+    --shadow:0 24px 60px -30px rgba(20,30,60,.22); --shadow-lg:0 40px 120px -44px rgba(20,30,60,.26);
+    color-scheme: light;
+  }
+  :root[data-theme="dark"] {
+    --bg:#0A0E17; --bg-2:#070A11; --surface:#111725; --surface-2:#161D2E; --surface-3:#1B2436;
+    --line:#232C40; --line-soft:#1A2233; --text:#E7EBF3; --text-2:#B4BDD0; --muted:#7E889E; --faint:#59637A;
+    --accent:#FFB454; --accent-soft:#FFB45422; --accent-line:#FFB45455; --accent-2:#4FD6C9; --accent-2-soft:#4FD6C922;
+    --good:#5FD69B; --crit:#FF6B7B; --grid:#ffffff08;
+    --shadow:0 24px 60px -28px rgba(0,0,0,.75); --shadow-lg:0 40px 120px -40px rgba(0,0,0,.85);
+    color-scheme: dark;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    font-size: 16px;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ambient background grid + glow */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 40%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  ::selection { background: var(--accent-soft); color: var(--text); }
+
+  a { color: inherit; text-decoration: none; }
+  button { font-family: inherit; cursor: pointer; }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .wrap { max-width: var(--maxw); margin: 0 auto; padding: 0 clamp(18px, 4vw, 40px); }
+  .mono { font-family: var(--font-mono); }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---------- top status bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 60;
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.2);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    border-bottom: 1px solid var(--line);
+  }
+  .topbar-inner {
+    max-width: var(--maxw); margin: 0 auto;
+    padding: 10px clamp(18px,4vw,40px);
+    display: flex; align-items: center; gap: 18px;
+    font-family: var(--font-mono); font-size: 12.5px;
+  }
+  .brand { display: flex; align-items: center; gap: 9px; font-weight: 600; letter-spacing: .02em; white-space: nowrap; }
+  .brand .dot {
+    width: 8px; height: 8px; border-radius: 50%; background: var(--good);
+    box-shadow: 0 0 0 0 var(--good);
+    animation: pulse 2.4s infinite;
+  }
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--good) 60%, transparent); }
+    70% { box-shadow: 0 0 0 7px transparent; }
+    100% { box-shadow: 0 0 0 0 transparent; }
+  }
+  .brand b { color: var(--text); }
+  .brand span { color: var(--muted); }
+  .topnav { display: flex; gap: 4px; margin-left: 6px; }
+  .topnav a {
+    color: var(--muted); padding: 5px 10px; border-radius: 7px;
+    transition: color .15s, background .15s;
+  }
+  .topnav a:hover { color: var(--text); background: var(--surface-2); }
+  .topbar-right { margin-left: auto; display: flex; align-items: center; gap: 10px; color: var(--muted); }
+  .metric-mini { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+  .metric-mini b { color: var(--accent-2); font-weight: 600; }
+  .kbd {
+    display: inline-flex; align-items: center; gap: 5px;
+    border: 1px solid var(--line); background: var(--surface-2);
+    color: var(--text-2); padding: 4px 8px; border-radius: 7px;
+    font-size: 11.5px; transition: border-color .15s, color .15s;
+  }
+  .kbd:hover { border-color: var(--accent-line); color: var(--text); }
+  .kbd kbd { font-family: inherit; color: var(--accent); }
+  .kbd .kbd-ico { display: none; width: 15px; height: 15px; }
+  .kbd .kbd-txt { display: inline-flex; align-items: center; gap: 5px; }
+  .icon-btn {
+    display: inline-grid; place-items: center; width: 32px; height: 32px;
+    border: 1px solid var(--line); background: var(--surface-2); color: var(--text-2);
+    border-radius: 8px; transition: all .15s;
+  }
+  .icon-btn:hover { border-color: var(--accent-line); color: var(--accent); }
+  .icon-btn svg { width: 15px; height: 15px; }
+
+  /* ---------- section scaffolding ---------- */
+  section { position: relative; z-index: 1; }
+  .sec { padding: clamp(56px, 8vw, 104px) 0; }
+  .sec-head { margin-bottom: 40px; }
+  .eyebrow {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .18em;
+    text-transform: uppercase; color: var(--accent);
+    display: inline-flex; align-items: center; gap: 10px;
+  }
+  .eyebrow::before {
+    content: ""; width: 22px; height: 1px; background: var(--accent-line);
+  }
+  .sec-title {
+    font-family: var(--font-mono); font-weight: 700;
+    font-size: clamp(1.6rem, 3.4vw, 2.5rem); line-height: 1.08;
+    letter-spacing: -.02em; margin: 14px 0 0; text-wrap: balance;
+  }
+  .sec-sub { color: var(--text-2); max-width: 62ch; margin-top: 14px; }
+
+  /* reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(22px); transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- HERO ---------- */
+  .hero { padding-top: clamp(40px, 6vw, 70px); padding-bottom: clamp(30px,5vw,60px); position: relative; }
+  .hero-grid {
+    display: grid; grid-template-columns: 1.15fr .85fr; gap: clamp(24px, 4vw, 56px);
+    align-items: center;
+  }
+  .hero-status {
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 10px;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 6px 14px 6px 12px; box-shadow: var(--shadow);
+  }
+  .hero-status .live { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); animation: pulse-a 1.8s infinite; }
+  @keyframes pulse-a {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 var(--accent-soft); }
+    50% { opacity: .55; box-shadow: 0 0 0 6px transparent; }
+  }
+  .hero-status b { color: var(--text-2); font-weight: 500; }
+
+  .hero h1 {
+    font-family: var(--font-mono); font-weight: 800;
+    font-size: clamp(2.5rem, 6.6vw, 4.6rem); line-height: .98;
+    letter-spacing: -.035em; margin: 22px 0 0;
+  }
+  .hero h1 .grad {
+    background: linear-gradient(100deg, var(--text) 20%, var(--accent) 75%, var(--accent-2) 105%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .role-line {
+    font-family: var(--font-mono); font-size: clamp(1rem, 2vw, 1.35rem);
+    color: var(--accent-2); margin-top: 18px; min-height: 1.5em; font-weight: 600; letter-spacing: -.01em;
+  }
+  .cursor {
+    display: inline-block; width: .58ch; height: 1.05em; transform: translateY(.16em);
+    background: var(--accent); margin-left: 2px; animation: blink 1.05s steps(1) infinite;
+  }
+  @keyframes blink { 50% { opacity: 0; } }
+  .hero-desc { color: var(--text-2); font-size: 1.08rem; margin-top: 22px; max-width: 54ch; }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+  .chip {
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--text-2);
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px;
+    padding: 6px 13px; display: inline-flex; align-items: center; gap: 7px;
+    transition: border-color .15s, color .15s, transform .15s;
+  }
+  a.chip:hover { border-color: var(--accent-line); color: var(--text); transform: translateY(-1px); }
+  .chip svg { width: 13px; height: 13px; opacity: .85; }
+  .chip .k { color: var(--faint); }
+
+  .cta-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 30px; }
+  .btn {
+    font-family: var(--font-mono); font-size: 14px; font-weight: 600;
+    padding: 12px 20px; border-radius: 11px; display: inline-flex; align-items: center; gap: 9px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    transition: transform .16s, border-color .16s, background .16s, box-shadow .16s;
+  }
+  .btn svg { width: 16px; height: 16px; }
+  .btn:hover { transform: translateY(-2px); border-color: var(--accent-line); }
+  .btn.primary {
+    background: linear-gradient(180deg, color-mix(in srgb,var(--accent) 92%, #fff) , var(--accent));
+    color: #1a1205; border-color: transparent;
+    box-shadow: 0 14px 34px -14px var(--accent);
+  }
+  .btn.primary:hover { box-shadow: 0 20px 44px -14px var(--accent); }
+
+  /* hero canvas panel */
+  .hero-visual {
+    position: relative; aspect-ratio: 1 / 1; width: 100%;
+    border: 1px solid var(--line); border-radius: 20px; overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 30% 15%, var(--surface-2), var(--surface) 60%, var(--bg-2));
+    box-shadow: var(--shadow-lg);
+  }
+  .hero-visual canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hv-label {
+    position: absolute; left: 14px; top: 12px; font-family: var(--font-mono);
+    font-size: 11.5px; color: var(--muted); letter-spacing: .04em; z-index: 2;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .hv-label .d { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-2); }
+  .hv-foot {
+    position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 2;
+    display: flex; justify-content: space-between; font-family: var(--font-mono);
+    font-size: 11px; color: var(--faint);
+  }
+  .hv-foot b { color: var(--accent-2); }
+
+  /* ---------- metrics ---------- */
+  .metrics {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+    margin-top: clamp(36px, 5vw, 56px);
+  }
+  .metric {
+    border: 1px solid var(--line); background: var(--surface); border-radius: var(--r);
+    padding: 20px 20px 18px; position: relative; overflow: hidden;
+  }
+  .metric::after {
+    content: ""; position: absolute; left: 0; top: 0; height: 100%; width: 3px;
+    background: linear-gradient(var(--accent), var(--accent-2));
+    opacity: .8;
+  }
+  .metric .val {
+    font-family: var(--font-mono); font-weight: 800; font-size: clamp(1.9rem, 3.6vw, 2.6rem);
+    line-height: 1; letter-spacing: -.03em; color: var(--text);
+  }
+  .metric .val .u { color: var(--accent); font-size: .55em; margin-left: 2px; }
+  .metric .lbl { color: var(--muted); font-family: var(--font-mono); font-size: 12px; margin-top: 10px; letter-spacing: .03em; }
+
+  /* ---------- ask my CV ---------- */
+  .console {
+    border: 1px solid var(--line); border-radius: 16px; overflow: hidden;
+    background: var(--surface); box-shadow: var(--shadow); margin-top: 12px;
+  }
+  .console-bar {
+    display: flex; align-items: center; gap: 8px; padding: 11px 15px;
+    border-bottom: 1px solid var(--line); background: var(--surface-2);
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--muted);
+  }
+  .tl { display: flex; gap: 6px; }
+  .tl i { width: 11px; height: 11px; border-radius: 50%; display: block; }
+  .tl i:nth-child(1){ background:#ff5f57; } .tl i:nth-child(2){ background:#febc2e; } .tl i:nth-child(3){ background:#28c840; }
+  .console-title { margin-left: 6px; }
+  .console-title b { color: var(--text-2); font-weight: 500; }
+  .console-model { margin-left: auto; color: var(--accent-2); }
+  .console-body { padding: 20px; min-height: 190px; }
+  .msg { display: flex; gap: 12px; margin-bottom: 16px; }
+  .msg .who {
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: .05em;
+    padding: 3px 7px; border-radius: 6px; height: fit-content; white-space: nowrap; margin-top: 2px;
+  }
+  .msg.user .who { background: var(--accent-2-soft); color: var(--accent-2); border: 1px solid var(--accent-2-soft); }
+  .msg.bot .who { background: var(--accent-soft); color: var(--accent); border: 1px solid var(--accent-line); }
+  .msg .txt { color: var(--text-2); }
+  .msg.user .txt { color: var(--text); }
+  .msg .txt .caret { display:inline-block; width:.5ch; height:1em; background: var(--accent); transform: translateY(.14em); margin-left:1px; animation: blink 1.05s steps(1) infinite; }
+  .suggest { display: flex; flex-wrap: wrap; gap: 9px; padding: 15px 20px 20px; border-top: 1px dashed var(--line); }
+  .suggest .q {
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--text-2);
+    border: 1px solid var(--line); background: var(--surface-2); border-radius: 999px;
+    padding: 8px 14px; transition: all .15s;
+  }
+  .suggest .q:hover { border-color: var(--accent-line); color: var(--text); transform: translateY(-1px); }
+  .suggest .q::before { content: "› "; color: var(--accent); }
+
+  /* ---------- experience: trace waterfall ---------- */
+  .axis {
+    display: flex; justify-content: space-between; font-family: var(--font-mono);
+    font-size: 11px; color: var(--faint); padding: 0 2px 8px; margin-top: 8px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .trace { margin-top: 6px; }
+  .span-row {
+    border-bottom: 1px solid var(--line-soft);
+    padding: 16px 2px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .span-row:hover { background: var(--surface); }
+  .span-head { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  .span-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .span-idx { font-family: var(--font-mono); font-size: 12px; color: var(--faint); }
+  .span-role { font-weight: 700; font-size: 1.08rem; letter-spacing: -.01em; }
+  .span-org { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+  .span-client { font-family: var(--font-mono); font-size: 12px; color: var(--accent-2); }
+  .span-date { margin-left: auto; font-family: var(--font-mono); font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .span-bar-track { position: relative; height: 12px; border-radius: 6px; background: var(--surface-2); overflow: hidden; }
+  .span-bar {
+    position: absolute; top: 0; height: 100%; border-radius: 6px;
+    background: linear-gradient(90deg, var(--accent-2), var(--accent));
+    box-shadow: inset 0 0 0 1px #ffffff14;
+    transform-origin: left; transform: scaleX(0); transition: transform 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .span-bar.live::after {
+    content: ""; position: absolute; right: 0; top: 0; height: 100%; width: 10px;
+    background: #fff6; filter: blur(2px); animation: shimmer 1.6s ease-in-out infinite;
+  }
+  @keyframes shimmer { 0%,100%{opacity:.2;} 50%{opacity:.9;} }
+  .in .span-bar { transform: scaleX(1); }
+  .span-meta { display: flex; gap: 16px; align-items: center; margin-top: 4px; }
+  .span-dur { font-family: var(--font-mono); font-size: 11.5px; color: var(--muted); }
+  .span-tags-mini { font-family: var(--font-mono); font-size: 11.5px; color: var(--faint); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .span-toggle { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--accent); display: flex; align-items:center; gap:5px; }
+  .span-toggle svg { width: 12px; height: 12px; transition: transform .25s; }
+  .span-row.open .span-toggle svg { transform: rotate(90deg); }
+  .span-detail { display: none; padding: 4px 2px 6px; }
+  .span-row.open .span-detail { display: block; animation: fade .3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(-4px);} to {opacity:1; transform:none;} }
+  .span-detail ul { margin: 10px 0 14px; padding-left: 0; list-style: none; display: grid; gap: 8px; }
+  .span-detail li { color: var(--text-2); font-size: .96rem; padding-left: 22px; position: relative; }
+  .span-detail li::before { content: "▹"; position: absolute; left: 4px; color: var(--accent-2); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag {
+    font-family: var(--font-mono); font-size: 11.5px; color: var(--text-2);
+    border: 1px solid var(--line); background: var(--surface-2); border-radius: 6px; padding: 3px 9px;
+  }
+  .tag.ai { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+
+  /* ---------- skills matrix ---------- */
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 26px; }
+  .filter {
+    font-family: var(--font-mono); font-size: 13px; color: var(--muted);
+    border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 8px 16px;
+    transition: all .15s;
+  }
+  .filter[aria-pressed="true"] { color: var(--accent); border-color: var(--accent-line); background: var(--accent-soft); }
+  .filter:hover { color: var(--text); }
+  .skills-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 14px; }
+  .skill-card {
+    border: 1px solid var(--line); background: var(--surface); border-radius: var(--r);
+    padding: 18px; transition: opacity .3s, transform .3s, border-color .2s;
+  }
+  .skill-card:hover { border-color: var(--accent-line); transform: translateY(-2px); }
+  .skill-card.hide { display: none; }
+  .skill-card h4 {
+    font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent-2); margin: 0 0 4px;
+  }
+  .skill-card .cat { font-family: var(--font-mono); font-size: 10.5px; color: var(--faint); }
+  .skill-card .items { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .skill-card .items span {
+    font-size: 12.5px; color: var(--text-2); background: var(--surface-2);
+    border: 1px solid var(--line-soft); border-radius: 6px; padding: 3px 8px;
+    font-family: var(--font-mono);
+  }
+
+  /* ---------- architecture ---------- */
+  .arch {
+    border: 1px solid var(--line); border-radius: 18px; background: var(--surface);
+    padding: clamp(20px, 3vw, 34px); box-shadow: var(--shadow);
+  }
+  .flow { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; align-items: stretch; }
+  .node {
+    border: 1px solid var(--line); background: var(--surface-2); border-radius: 12px;
+    padding: 16px 14px; text-align: center; position: relative;
+  }
+  .node.hub { border-color: var(--accent-line); background: var(--accent-soft); }
+  .node .nl { font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; color: var(--muted); }
+  .node .nt { font-weight: 700; margin-top: 4px; font-size: .98rem; }
+  .node.hub .nt { color: var(--accent); }
+  .node small { display:block; color: var(--faint); font-size: 11px; margin-top: 6px; font-family: var(--font-mono); }
+  .flow-arrows { display: flex; justify-content: space-around; color: var(--faint); font-family: var(--font-mono); margin: 10px 0; }
+  .subgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 10px; }
+  .principles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 26px; }
+  .principle { border: 1px solid var(--line); background: var(--surface); border-radius: var(--r); padding: 20px; }
+  .principle .pi { font-family: var(--font-mono); font-size: 12px; color: var(--accent); letter-spacing: .05em; }
+  .principle h4 { margin: 8px 0 6px; font-size: 1.05rem; }
+  .principle p { color: var(--text-2); font-size: .94rem; margin: 0; }
+
+  /* ---------- certs + edu ---------- */
+  .two-col { display: grid; grid-template-columns: 1.35fr 1fr; gap: 28px; align-items: start; }
+  .edu-card {
+    border: 1px solid var(--line); background: var(--surface); border-radius: var(--r);
+    padding: 22px; margin-bottom: 14px;
+  }
+  .edu-card .when { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+  .edu-card h4 { margin: 8px 0 4px; font-size: 1.12rem; }
+  .edu-card .org { font-family: var(--font-mono); font-size: 13px; color: var(--muted); }
+  .edu-card p { color: var(--text-2); font-size: .94rem; margin: 12px 0 0; }
+  .badge-hl { display:inline-block; font-family: var(--font-mono); font-size:11px; color: var(--good); border:1px solid color-mix(in srgb,var(--good) 45%, transparent); background: color-mix(in srgb,var(--good) 12%, transparent); border-radius:999px; padding:3px 9px; margin-top:12px; }
+
+  .cert-list { display: flex; flex-direction: column; gap: 8px; }
+  .cert {
+    display: flex; align-items: baseline; gap: 12px; padding: 11px 14px;
+    border: 1px solid var(--line); background: var(--surface); border-radius: 10px;
+    transition: border-color .15s, transform .15s;
+  }
+  .cert:hover { border-color: var(--accent-line); transform: translateX(3px); }
+  .cert .yr { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent-2); white-space: nowrap; }
+  .cert .nm { font-size: .95rem; }
+  .cert .nm small { display:block; color: var(--muted); font-family: var(--font-mono); font-size: 11px; }
+
+  /* ---------- contact / footer ---------- */
+  .contact {
+    border: 1px solid var(--line); border-radius: 20px; padding: clamp(30px,5vw,56px);
+    background:
+      radial-gradient(120% 140% at 100% 0%, var(--accent-soft), transparent 55%),
+      radial-gradient(120% 140% at 0% 100%, var(--accent-2-soft), transparent 55%),
+      var(--surface);
+    box-shadow: var(--shadow-lg); text-align: center;
+  }
+  .contact h2 { font-family: var(--font-mono); font-size: clamp(1.7rem,4vw,2.6rem); letter-spacing: -.03em; margin: 0; text-wrap: balance; }
+  .contact p { color: var(--text-2); max-width: 52ch; margin: 16px auto 0; }
+  .contact .cta-row { justify-content: center; }
+
+  footer {
+    border-top: 1px solid var(--line); margin-top: 90px; padding: 30px 0 60px;
+    font-family: var(--font-mono); font-size: 12.5px; color: var(--muted);
+  }
+  .foot-inner { display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; }
+  .foot-inner a:hover { color: var(--accent); }
+
+  /* ---------- command palette ---------- */
+  .cmdk-overlay {
+    position: fixed; inset: 0; z-index: 200; display: none;
+    background: color-mix(in srgb, var(--bg-2) 66%, transparent);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+    align-items: flex-start; justify-content: center; padding: 12vh 20px 20px;
+  }
+  .cmdk-overlay.open { display: flex; animation: fade .18s ease; }
+  .cmdk {
+    width: min(560px, 100%); background: var(--surface); border: 1px solid var(--line);
+    border-radius: 16px; box-shadow: var(--shadow-lg); overflow: hidden;
+  }
+  .cmdk-input-wrap { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+  .cmdk-input-wrap svg { width: 17px; height: 17px; color: var(--muted); }
+  .cmdk input {
+    flex: 1; background: transparent; border: none; outline: none; color: var(--text);
+    font-family: var(--font-mono); font-size: 15px;
+  }
+  .cmdk .hint { font-family: var(--font-mono); font-size: 11px; color: var(--faint); }
+  .cmdk-list { max-height: 340px; overflow-y: auto; padding: 8px; }
+  .cmdk-item {
+    display: flex; align-items: center; gap: 12px; padding: 11px 12px; border-radius: 10px;
+    color: var(--text-2); font-size: 14px; cursor: pointer;
+  }
+  .cmdk-item .ci { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; background: var(--surface-2); border: 1px solid var(--line); color: var(--accent); font-family: var(--font-mono); font-size: 12px; }
+  .cmdk-item .cm { font-family: var(--font-mono); font-size: 11px; color: var(--faint); margin-left: auto; }
+  .cmdk-item.active, .cmdk-item:hover { background: var(--surface-2); color: var(--text); }
+  .cmdk-item.active .ci { border-color: var(--accent-line); }
+
+  .to-top {
+    position: fixed; right: 20px; bottom: 20px; z-index: 55;
+    width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
+    background: var(--surface); border: 1px solid var(--line); color: var(--accent);
+    opacity: 0; pointer-events: none; transform: translateY(10px); transition: all .25s;
+    box-shadow: var(--shadow);
+  }
+  .to-top.show { opacity: 1; pointer-events: auto; transform: none; }
+  .to-top svg { width: 18px; height: 18px; }
+
+  /* ---------- console tabs (ask + shell) ---------- */
+  .console-tabs { display: flex; gap: 4px; margin-left: 4px; }
+  .console-tab {
+    font-family: var(--font-mono); font-size: 12px; color: var(--muted);
+    background: transparent; border: 1px solid transparent; border-radius: 7px;
+    padding: 4px 11px; transition: all .15s;
+  }
+  .console-tab:hover { color: var(--text-2); }
+  .console-tab[aria-selected="true"] { color: var(--accent); background: var(--surface); border-color: var(--line); }
+  .tabpane { display: none; }
+  .tabpane.active { display: block; animation: fade .25s ease; }
+
+  /* chat free-text input */
+  .chat-input { display: flex; gap: 8px; padding: 13px 16px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .chat-input input {
+    flex: 1; background: var(--bg); border: 1px solid var(--line); border-radius: 9px; color: var(--text);
+    font-family: var(--font-mono); font-size: 13px; padding: 10px 13px; outline: none; transition: border-color .15s;
+  }
+  .chat-input input:focus { border-color: var(--accent-line); }
+  .chat-input button {
+    display: grid; place-items: center; width: 40px; border-radius: 9px; border: 1px solid transparent;
+    background: linear-gradient(180deg, color-mix(in srgb,var(--accent) 92%,#fff), var(--accent)); color: #1a1205;
+    font-family: var(--font-mono); font-size: 16px; font-weight: 700; transition: transform .15s;
+  }
+  .chat-input button:hover { transform: translateY(-1px); }
+
+  /* interactive terminal */
+  .term-body {
+    padding: 16px 18px; min-height: 300px; max-height: 440px; overflow-y: auto;
+    background: var(--bg-2); font-family: var(--font-mono); font-size: 13px; line-height: 1.7; cursor: text;
+  }
+  .term-line { white-space: pre-wrap; word-break: break-word; color: var(--text); }
+  .term-line .p { color: var(--accent-2); }
+  .term-out { color: var(--text-2); margin: 2px 0 12px; white-space: normal; }
+  .term-out .k { color: var(--accent); }
+  .term-out .err { color: var(--crit); }
+  .term-input-line { display: flex; align-items: center; gap: 9px; padding: 12px 18px; border-top: 1px solid var(--line); background: var(--surface-2); }
+  .term-input-line .p { color: var(--accent-2); font-family: var(--font-mono); font-size: 13px; white-space: nowrap; }
+  .term-input-line input { flex: 1; background: transparent; border: none; outline: none; color: var(--text); font-family: var(--font-mono); font-size: 13px; caret-color: var(--accent); }
+
+  /* graph interactivity affordance */
+  .hero-visual canvas { touch-action: none; }
+  .hv-label, .hv-foot { pointer-events: none; }
+  .hv-hint { position: absolute; right: 14px; top: 12px; z-index: 2; font-family: var(--font-mono); font-size: 10.5px; color: var(--faint); pointer-events: none; }
+
+  /* toast */
+  .toast-wrap { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 240; display: flex; flex-direction: column; gap: 8px; align-items: center; pointer-events: none; }
+  .toast {
+    background: var(--surface); border: 1px solid var(--accent-line); color: var(--text);
+    font-family: var(--font-mono); font-size: 13px; padding: 10px 16px; border-radius: 11px;
+    box-shadow: var(--shadow); display: flex; gap: 9px; align-items: center;
+  }
+  .toast .d { color: var(--good); }
+
+  /* cursor spotlight */
+  .cursor-glow {
+    position: fixed; width: 480px; height: 480px; border-radius: 50%; pointer-events: none; z-index: 0;
+    transform: translate(-50%, -50%); left: 50%; top: 180px;
+    background: radial-gradient(circle, var(--accent-soft), transparent 60%);
+    opacity: .7; mix-blend-mode: screen;
+  }
+  :root[data-theme="light"] .cursor-glow { mix-blend-mode: multiply; opacity: .5; }
+
+  /* token rain easter egg */
+  .rain { position: fixed; inset: 0; z-index: 250; pointer-events: none; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 28px; }
+    .hero-visual { max-width: 380px; margin: 4px auto 0; }
+    .metrics { grid-template-columns: repeat(2, 1fr); }
+    .two-col { grid-template-columns: 1fr; }
+    .flow { grid-template-columns: 1fr; }
+    .subgrid { grid-template-columns: repeat(2, 1fr); }
+    .principles { grid-template-columns: 1fr; }
+    .topnav { display: none; }
+    .flow-arrows { display: none; }
+  }
+
+  /* touch / no-hover devices */
+  @media (hover: none) {
+    .cursor-glow { display: none; }
+  }
+
+  /* phones */
+  @media (max-width: 620px) {
+    .topbar-inner { gap: 10px; }
+    .topbar-right { gap: 8px; }
+    .topbar-right .metric-mini { display: none; }
+    .kbd .kbd-ico { display: block; }
+    .kbd .kbd-txt { display: none; }
+    .kbd { padding: 7px 9px; }
+
+    .hero { padding-top: 30px; }
+    .hero h1 { font-size: clamp(2.15rem, 12vw, 3.1rem); }
+    .role-line { font-size: 1rem; }
+    .hero-desc { font-size: 1rem; }
+    .hero-visual { max-width: min(360px, 84vw); }
+    .cta-row { gap: 10px; }
+    .cta-row .btn { flex: 1 1 44%; justify-content: center; }
+    .cta-row .btn.primary { flex-basis: 100%; }
+
+    .sec { padding: 54px 0; }
+    .sec-title { font-size: clamp(1.5rem, 7vw, 2rem); }
+    .metrics { grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 34px; }
+    .metric { padding: 16px 15px 14px; }
+    .metric .val { font-size: 2rem; }
+
+    .console-model { display: none; }
+    .console-bar { padding: 10px 12px; gap: 6px; }
+    .console-tab { padding: 5px 10px; font-size: 11.5px; }
+    .console-body { padding: 16px; }
+    .chat-input { padding: 12px; }
+    .term-body { min-height: 240px; max-height: 60vh; padding: 14px; }
+    .term-input-line { padding: 11px 14px; }
+    .suggest { padding: 14px 16px 18px; }
+    .suggest .q { padding: 9px 13px; }
+
+    .span-top { gap: 8px 10px; }
+    .span-role { font-size: 1rem; flex-basis: 100%; }
+    .span-date { margin-left: 0; }
+    .span-tags-mini { display: none; }
+    .span-toggle { margin-left: auto; }
+
+    .subgrid { grid-template-columns: 1fr; }
+    .filter { padding: 9px 15px; }
+    .contact { padding: 30px 22px; }
+    .foot-inner { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .to-top { right: 14px; bottom: 14px; }
+  }
+
+  @media (max-width: 400px) {
+    .brand span { display: none; }
+    .hero h1 { font-size: clamp(1.95rem, 13vw, 2.6rem); }
+    .cta-row .btn { flex-basis: 100%; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .span-bar { transition: none; }
+  }
+</style>
+
+<!-- ================= TOP STATUS BAR ================= -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <b>mauricio.lulusis</b><span>// cv.trace</span>
+    </div>
+    <nav class="topnav" aria-label="Secciones">
+      <a href="#perfil">perfil</a>
+      <a href="#experiencia">experiencia</a>
+      <a href="#skills">skills</a>
+      <a href="#arquitectura">arquitectura</a>
+      <a href="#formacion">formación</a>
+      <a href="#contacto">contacto</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="metric-mini mono">tokens <b id="tokCount" class="tnum">0</b></span>
+      <span class="metric-mini mono">lat <b class="tnum">42<span style="color:var(--faint)">ms</span></b></span>
+      <button class="kbd" id="cmdkOpen" aria-label="Buscar y navegar">
+        <svg class="kbd-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+        <span class="kbd-txt"><kbd>⌘</kbd>K</span>
+      </button>
+      <button class="icon-btn" id="themeToggle" aria-label="Cambiar tema">
+        <svg id="themeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<main>
+<div class="wrap">
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" id="perfil">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="hero-status"><span class="live" aria-hidden="true"></span><b>sesión activa · generando perfil…</b></span>
+        <h1><span class="grad" id="heroName">&nbsp;</span></h1>
+        <div class="role-line" id="heroRole"></div>
+        <p class="hero-desc" id="heroDesc"></p>
+
+        <div class="chips" id="heroChips" style="opacity:0; transition:opacity .5s;">
+          <span class="chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-5.2-7-11a7 7 0 0 1 14 0c0 5.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Posadas, Misiones · AR</span>
+          <span class="chip"><span class="k">reubicación:</span> cualquier parte · remoto</span>
+          <a class="chip" id="emailChip" href="mailto:mauricio.lulusis99@gmail.com" title="Click para copiar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>mauricio.lulusis99@gmail.com</a>
+          <a class="chip" href="tel:+543764160290"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h4l2 5-3 2a12 12 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 2 6a2 2 0 0 1 2-2z"/></svg>+54 376 416 0290</a>
+          <a class="chip" href="https://www.linkedin.com/in/mauriciolulusis/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.3c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21h-4z"/></svg>LinkedIn</a>
+        </div>
+
+        <div class="cta-row" id="heroCta" style="opacity:0; transition:opacity .5s;">
+          <a class="btn primary" href="#chat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Hablá con mi CV
+          </a>
+          <a class="btn" href="#experiencia">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            Ver experiencia
+          </a>
+          <a class="btn" href="Lulusis Mauricio CV.pdf" download>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+            PDF
+          </a>
+        </div>
+      </div>
+
+      <div class="hero-visual">
+        <span class="hv-label"><span class="d"></span>agent.topology</span>
+        <span class="hv-hint">arrastrá · hover · click</span>
+        <canvas id="graph" aria-label="Grafo interactivo de agentes: orchestrator y subagentes"></canvas>
+        <div class="hv-foot">
+          <span>orchestrator + <b id="subCount">6</b> subagents</span>
+          <span>rag · mcp · tools · evals</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- metrics -->
+    <div class="metrics reveal" id="metrics">
+      <div class="metric"><div class="val tnum" data-count="2" data-pad="2">00</div><div class="lbl">roles activos // AI + Backend</div></div>
+      <div class="metric"><div class="val tnum" data-count="5" data-suffix="+">0</div><div class="lbl">clientes enterprise</div></div>
+      <div class="metric"><div class="val tnum" data-count="15" data-suffix="+">0</div><div class="lbl">certificaciones</div></div>
+      <div class="metric"><div class="val tnum" data-count="5" data-suffix=" <span class='u'>yr</span>">0</div><div class="lbl">en tecnología · desde 2021</div></div>
+    </div>
+  </section>
+
+  <!-- ================= ASK MY CV ================= -->
+  <section class="sec" id="chat">
+    <div class="sec-head reveal">
+      <span class="eyebrow">retrieval · rag + shell interactiva</span>
+      <h2 class="sec-title">Consola interactiva</h2>
+      <p class="sec-sub">Dos modos: <b>ask-my-cv</b>, un mini-agente RAG que responde en streaming (elegí o escribí tu pregunta), y <b>shell</b>, una terminal real — escribí <code style="font-family:var(--font-mono);color:var(--accent)">help</code> para empezar. Probá también <code style="font-family:var(--font-mono);color:var(--accent)">sudo hire</code> 😉</p>
+    </div>
+    <div class="console reveal">
+      <div class="console-bar">
+        <span class="tl"><i></i><i></i><i></i></span>
+        <span class="console-tabs" role="tablist" aria-label="Modo de consola">
+          <button class="console-tab" role="tab" aria-selected="true" data-tab="ask">◈ ask-my-cv</button>
+          <button class="console-tab" role="tab" aria-selected="false" data-tab="shell">▸ shell</button>
+        </span>
+        <span class="console-model mono" id="consoleModel">claude · grounded</span>
+      </div>
+
+      <div class="tabpane active" data-pane="ask">
+        <div class="console-body" id="chatBody">
+          <div class="msg bot">
+            <span class="who mono">agent</span>
+            <div class="txt">Hola 👋 Soy el agente de Mauricio, con respuestas fundamentadas en su perfil. Preguntame por su stack de IA, su experiencia o por qué sería un gran fichaje — elegí una consulta o escribí la tuya abajo.</div>
+          </div>
+        </div>
+        <div class="suggest" id="suggest"></div>
+        <form class="chat-input" id="chatForm">
+          <input id="chatInput" placeholder="Escribí tu pregunta… ej: ¿qué sabés de RAG?" autocomplete="off" aria-label="Preguntá al agente" />
+          <button type="submit" aria-label="Enviar pregunta">▸</button>
+        </form>
+      </div>
+
+      <div class="tabpane" data-pane="shell">
+        <div class="term-body" id="termBody"></div>
+        <form class="term-input-line" id="termForm">
+          <span class="p mono">mauricio@trace:~$</span>
+          <input id="termInput" autocomplete="off" spellcheck="false" aria-label="Terminal · escribí un comando" />
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= EXPERIENCE (trace waterfall) ================= -->
+  <section class="sec" id="experiencia">
+    <div class="sec-head reveal">
+      <span class="eyebrow">trace · timeline de ejecución</span>
+      <h2 class="sec-title">Experiencia como waterfall de spans</h2>
+      <p class="sec-sub">Cada rol es un span sobre la misma línea de tiempo (2021 → hoy). Los spans en curso laten en vivo. Tocá cualquiera para expandir el detalle.</p>
+    </div>
+    <div class="reveal">
+      <div class="axis mono" id="axis"></div>
+      <div class="trace" id="trace"></div>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section class="sec" id="skills">
+    <div class="sec-head reveal">
+      <span class="eyebrow">capabilities · stack</span>
+      <h2 class="sec-title">Matriz de skills</h2>
+      <p class="sec-sub">Filtrá por dominio. De agentes y LLMs a backend distribuido, datos, cloud y observabilidad.</p>
+    </div>
+    <div class="filters reveal" id="filters"></div>
+    <div class="skills-grid reveal" id="skillsGrid"></div>
+  </section>
+
+  <!-- ================= ARCHITECTURE ================= -->
+  <section class="sec" id="arquitectura">
+    <div class="sec-head reveal">
+      <span class="eyebrow">system design · cómo construyo</span>
+      <h2 class="sec-title">Arquitectura agentic end-to-end</h2>
+      <p class="sec-sub">Un patrón orchestrator + subagentes que aplico para automatizar procesos y modernizar sistemas legacy: captura de contexto, ruteo, ejecución especializada, herramientas vía MCP y observabilidad continua.</p>
+    </div>
+    <div class="arch reveal">
+      <div class="flow">
+        <div class="node"><div class="nl">01 · input</div><div class="nt">Contexto</div><small>docs · RAG · APIs</small></div>
+        <div class="node hub"><div class="nl">02 · core</div><div class="nt">Orchestrator</div><small>ruteo · planning</small></div>
+        <div class="node"><div class="nl">03 · exec</div><div class="nt">Subagentes</div><small>skills · tool calling</small></div>
+        <div class="node"><div class="nl">04 · tools</div><div class="nt">MCP · Tools</div><small>servidores · APIs</small></div>
+        <div class="node"><div class="nl">05 · ops</div><div class="nt">Observabilidad</div><small>evals · trazas · costo</small></div>
+      </div>
+      <div class="subgrid">
+        <div class="node"><div class="nt" style="font-size:.9rem">Análisis</div><small>legacy · PL/SQL</small></div>
+        <div class="node"><div class="nt" style="font-size:.9rem">Retrieval</div><small>RAG · semántica</small></div>
+        <div class="node"><div class="nt" style="font-size:.9rem">Generación</div><small>codegen · docs</small></div>
+        <div class="node"><div class="nt" style="font-size:.9rem">Validación</div><small>evals · guardrails</small></div>
+      </div>
+      <div class="principles">
+        <div class="principle"><div class="pi">// backend</div><h4>Fundaciones sólidas</h4><p>Node.js, NestJS, Python y .NET con arquitectura hexagonal, DDD y microservicios. Mantenible, trazable y escalable.</p></div>
+        <div class="principle"><div class="pi">// ia aplicada</div><h4>IA con propósito</h4><p>Agentes, RAG, MCP, prompt engineering y evals para resolver casos reales, no demos. Groundedness y confiabilidad primero.</p></div>
+        <div class="principle"><div class="pi">// operación</div><h4>Producción end-to-end</h4><p>Del prototipo a producción con LLMOps: Langfuse, LiteLLM, métricas de tokens/costo/latencia y mejora continua.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FORMACIÓN + CERTS ================= -->
+  <section class="sec" id="formacion">
+    <div class="sec-head reveal">
+      <span class="eyebrow">education · certifications</span>
+      <h2 class="sec-title">Formación & certificaciones</h2>
+      <p class="sec-sub">Ingeniería en etapa final con tesis en IA aplicada a salud, y aprendizaje continuo en IA, backend y liderazgo.</p>
+    </div>
+    <div class="two-col">
+      <div class="reveal">
+        <div class="edu-card">
+          <div class="when">2021 — actualidad · en curso</div>
+          <h4>Ingeniería en Sistemas de Información</h4>
+          <div class="org">Universidad Cuenca del Plata · Posadas</div>
+          <p>Etapa final de la carrera: una sola materia pendiente y tesis en desarrollo sobre <b>IA aplicada a análisis clínicos</b> — interoperabilidad (HL7/FHIR), procesamiento de datos médicos y agentes inteligentes.</p>
+          <span class="badge-hl">● tesis en desarrollo</span>
+        </div>
+        <div class="edu-card">
+          <div class="when">2012 — 2018</div>
+          <h4>Secundario Técnico · Técnico Automotriz</h4>
+          <div class="org">Instituto Politécnico San Arnoldo Janssen · Posadas</div>
+          <p>Base técnica temprana que derivó en electrónica, sistemas embebidos y desarrollo de software.</p>
+        </div>
+        <div class="edu-card">
+          <div class="when">idiomas</div>
+          <h4>Español · Inglés · Portugués</h4>
+          <div class="org">nativo · intermedio · intermedio</div>
+        </div>
+      </div>
+      <div class="reveal">
+        <div class="cert-list" id="certList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section class="sec" id="contacto">
+    <div class="contact reveal">
+      <span class="eyebrow" style="justify-content:center; margin-bottom:8px;">endpoint · disponible</span>
+      <h2>Construyamos algo con impacto real</h2>
+      <p>Backend sólido + IA aplicada + operación en producción. Abierto a roles de AI Engineer, Backend y Technical Lead — remoto o dispuesto a trasladarme a cualquier parte.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="mailto:mauricio.lulusis99@gmail.com">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+          Escribime
+        </a>
+        <a class="btn" href="https://www.linkedin.com/in/mauriciolulusis/" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5zM3 9h4v12H3zM10 9h3.8v1.7h.05c.53-1 1.83-2.05 3.77-2.05 4.03 0 4.78 2.65 4.78 6.1V21h-4v-5.3c0-1.27-.02-2.9-1.77-2.9-1.77 0-2.04 1.38-2.04 2.8V21h-4z"/></svg>
+          LinkedIn
+        </a>
+        <a class="btn" href="tel:+543764160290">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h4l2 5-3 2a12 12 0 0 0 6 6l2-3 5 2v4a2 2 0 0 1-2 2A17 17 0 0 1 2 6a2 2 0 0 1 2-2z"/></svg>
+          +54 376 416 0290
+        </a>
+      </div>
+    </div>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap foot-inner">
+    <span>© 2026 Mauricio N. Lulusis · Ingeniero en Sistemas de Información</span>
+    <span>diseñado como una sesión de observabilidad · <a href="#perfil">volver arriba ↑</a></span>
+  </div>
+</footer>
+
+<!-- to top -->
+<button class="to-top" id="toTop" aria-label="Volver arriba"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<!-- ================= COMMAND PALETTE ================= -->
+<div class="cmdk-overlay" id="cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="cmdk">
+    <div class="cmdk-input-wrap">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4-4"/></svg>
+      <input id="cmdkInput" placeholder="Buscar sección o acción…" autocomplete="off" spellcheck="false" />
+      <span class="hint">ESC</span>
+    </div>
+    <div class="cmdk-list" id="cmdkList"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
+
+  /* ---------- THEME ---------- */
+  var root = document.documentElement;
+  var themeIcon = $("#themeIcon");
+  function currentTheme() {
+    if (root.getAttribute("data-theme")) return root.getAttribute("data-theme");
+    return (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+  }
+  function setThemeIcon(t) {
+    if (!themeIcon) return;
+    if (t === "light") {
+      themeIcon.innerHTML = '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>';
+    } else {
+      themeIcon.innerHTML = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>';
+    }
+  }
+  setThemeIcon(currentTheme());
+  var tt = $("#themeToggle");
+  if (tt) tt.addEventListener("click", function () {
+    var next = currentTheme() === "dark" ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    setThemeIcon(next);
+    if (graph) graph.recolor();
+  });
+
+  /* ---------- HERO STREAMING ---------- */
+  var nameEl = $("#heroName"), roleEl = $("#heroRole"), descEl = $("#heroDesc");
+  var chipsEl = $("#heroChips"), ctaEl = $("#heroCta");
+  var NAME = "Mauricio Lulusis";
+  var ROLE = "AI Engineer · Backend Engineer · Technical Lead I+D";
+  var DESC = "Construyo sistemas de IA en producción — agentes, RAG, MCP y arquitecturas agentic — sobre backend sólido, observable y escalable. Actualmente en Mercado Libre (Datial) y liderando I+D de IA en Incubator (Galicia).";
+  var tokEl = $("#tokCount"), tokN = 0;
+  function bumpTok(n) { tokN += n; if (tokEl) tokEl.textContent = tokN.toLocaleString("es-AR"); }
+
+  function typeInto(el, text, speed, withCursor) {
+    return new Promise(function (resolve) {
+      if (reduce) { el.textContent = text; resolve(); return; }
+      var i = 0, cur = null;
+      if (withCursor) { cur = document.createElement("span"); cur.className = "cursor"; }
+      function step() {
+        el.textContent = text.slice(0, i);
+        if (cur) el.appendChild(cur);
+        if (i % 2 === 0) bumpTok(1);
+        i++;
+        if (i <= text.length) { setTimeout(step, speed + Math.random() * speed * 0.7); }
+        else { if (cur && cur.parentNode) cur.parentNode.removeChild(cur); resolve(); }
+      }
+      step();
+    });
+  }
+
+  function runHero() {
+    if (reduce) {
+      nameEl.textContent = NAME; roleEl.textContent = ROLE; descEl.textContent = DESC;
+      chipsEl.style.opacity = 1; ctaEl.style.opacity = 1; bumpTok(348);
+      return;
+    }
+    typeInto(nameEl, NAME, 55, true)
+      .then(function () { return typeInto(roleEl, ROLE, 24, true); })
+      .then(function () { return typeInto(descEl, DESC, 9, false); })
+      .then(function () { chipsEl.style.opacity = 1; ctaEl.style.opacity = 1; });
+  }
+
+  /* ---------- METRICS COUNT-UP ---------- */
+  function countUp(el) {
+    var target = parseFloat(el.getAttribute("data-count"));
+    var pad = parseInt(el.getAttribute("data-pad") || "0", 10);
+    var suffix = el.getAttribute("data-suffix") || "";
+    function render(v) {
+      var s = String(v);
+      if (pad) while (s.length < pad) s = "0" + s;
+      el.innerHTML = s + suffix;
+    }
+    if (reduce) { render(target); return; }
+    var start = null, dur = 1100;
+    function frame(ts) {
+      if (!start) start = ts;
+      var p = Math.min((ts - start) / dur, 1);
+      var eased = 1 - Math.pow(1 - p, 3);
+      render(Math.round(target * eased));
+      if (p < 1) requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- REVEAL + triggers ---------- */
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (!e.isIntersecting) return;
+      e.target.classList.add("in");
+      if (e.target.id === "metrics") $$(".val", e.target).forEach(countUp);
+      io.unobserve(e.target);
+    });
+  }, { threshold: 0.18 });
+  $$(".reveal").forEach(function (el) { io.observe(el); });
+
+  /* ---------- EXPERIENCE DATA ---------- */
+  var NOW = 2026 + (6 / 12); // jul 2026
+  var START = 2021;
+  function ym(y, m) { return y + (m - 1) / 12; }
+  var JOBS = [
+    {
+      role: "Sr Backend Engineer · AI Engineer (Conversational AI)",
+      org: "Datial", client: "Cliente: Mercado Libre · equipo FPS",
+      s: ym(2025,6), e: NOW, live: true, dateStr: "jun 2025 — actualidad",
+      tags: ["Node.js","TypeScript","Python","GCP","BigQuery","BotMaker","Verdi","MCP","RAG","Agentes"],
+      bullets: [
+        "Diseño y desarrollo de servicios backend, APIs e integraciones que soportan bots, agentes conversacionales y automatizaciones internas de Mercado Libre.",
+        "Arquitecturas agentic: Skill orquestadora principal que rutea conversaciones e invoca sub-skills/subagentes especializados (captura, razonamiento, planificación, ejecución, verificación).",
+        "Migración de flujos de BotMaker a Verdi, rearmando lógica conversacional sobre workflows por nodos (speaker, listener, logic, code, function, API).",
+        "RAG / Knowledge Retrieval con estrategias de chunking, control de contexto y grounding; enfoques MCP para conectar modelos, herramientas y fuentes.",
+        "Prompt engineering avanzado: outputs estructurados, constraints, few-shot, guardrails y normalización de entradas.",
+        "Observabilidad y LLMOps sobre Fury: Grafana, DataDog, New Relic, Kibana, OpenTelemetry — error rate, p95/p99, tokens, costo y evals de agentes."
+      ]
+    },
+    {
+      role: "Backend Engineer · Technical Lead I+D — AI Engineer",
+      org: "Incubator", client: "Cliente: Rentas · modernización Oracle Forms",
+      s: ym(2025,5), e: NOW, live: true, dateStr: "may 2025 — actualidad",
+      tags: ["NestJS","TypeScript","Python","Hexagonal/DDD","Redis","AWS S3","Docker","n8n","CrewAI","Langfuse","LiteLLM","Evals"],
+      bullets: [
+        "Referente técnico de IA y automatización: conduzco el ciclo GenAI/LLM end-to-end — relevamiento, arquitectura, prototipo, validación, despliegue y mejora continua.",
+        "Modernización de Oracle Forms/Reports + PL/SQL (.FMB → XML/JSON): extracción de reglas de negocio, triggers y dependencias hacia backend con NestJS y arquitectura hexagonal/DDD.",
+        "Agentes y subagentes especializados para análisis de formularios legacy, interpretación de PL/SQL, generación de documentación técnica y asistencia en migraciones.",
+        "Buenas prácticas de AI Engineering: diseño de prompts, RAG, evals, control de costos/tokens y trazabilidad con Langfuse; LiteLLM como capa multi-modelo (ruteo, fallback).",
+        "Automatización con n8n, Make y CrewAI; prompts con GPT-4o y Claude; exploración de MCPs. Mentoring técnico, code reviews y guía de arquitectura al equipo."
+      ]
+    },
+    {
+      role: "Sr Backend Engineer & AI Engineer",
+      org: "Incubator", client: "Cliente: Banco Galicia · ecosistema GEAR",
+      s: ym(2025,5), e: NOW, live: true, dateStr: "2025 — actualidad",
+      tags: [".NET 8","Python","TypeScript","LangChain","FastMCP","RAG","Búsqueda semántica","Langfuse","Azure AI","OpenAI","Claude"],
+      bullets: [
+        "Iniciativa GEAR: base técnica para que los equipos construyan soluciones de IA (agentes, RAGs, evals, skills reutilizables) de forma segura, modular y gobernable.",
+        "Modernización tecnológica: migración de librerías legacy de .NET Framework 3.5 → .NET 8, reduciendo deuda técnica.",
+        "RAG con búsqueda semántica, indexación de documentación técnica y respuestas contextualizadas; LangChain, tool calling, chains y retrievers.",
+        "MCP / FastMCP para integrar modelos, herramientas internas y fuentes de contexto; subagentes para análisis de código, revisión arquitectónica y testing.",
+        "LLMOps y evals: métricas de latencia, tokens, costo, fallback y groundedness; evaluación comparativa de modelos, frameworks y estrategias."
+      ]
+    },
+    {
+      role: "Desarrollador Backend · Integraciones & Área Médica",
+      org: "Intuit Salud", client: "OSDE · Swiss Medical · Omint · Tasy",
+      s: ym(2024,4), e: ym(2025,5), live: false, dateStr: "abr 2024 — may 2025",
+      tags: [".NET","C#","Entity Framework","Dapper","HL7","FHIR","WebServices","SQL Server","CQRS"],
+      bullets: [
+        "Sistemas críticos de salud e interoperabilidad entre sistemas clínicos, prestadores y plataformas internas.",
+        "Integraciones con OSDE, Swiss Medical y Omint; plataformas del ecosistema sanitario como Tasy y estándares HL7.",
+        "APIs, WebServices e integraciones RESTful; SQL Server con stored procedures, transacciones avanzadas y optimización.",
+        "Buenas prácticas: SOLID, Clean Architecture, TDD, Repository, CQRS y Scrum. Análisis funcional y relevamiento con clientes."
+      ]
+    },
+    {
+      role: "Analista Funcional & Backend Developer .NET",
+      org: "Eximo S.A.", client: "Plataforma eXimoSIO · Oil & Gas",
+      s: ym(2024,12), e: ym(2025,4), live: false, dateStr: "dic 2024 — abr 2025",
+      tags: [".NET Core",".NET Framework","ADO.NET","SQL Server","CQRS","xUnit","UML","Jira"],
+      bullets: [
+        "Doble rol: análisis funcional + desarrollo backend .NET para la gestión de activos en Oil & Gas.",
+        "APIs RESTful, ADO.NET y Entity Framework sobre grandes volúmenes; patrones CQRS, Repository y SOLID.",
+        "Relevamiento y documentación funcional/técnica, diagramas UML (casos de uso, clases, secuencia); Scrum y Kanban."
+      ]
+    },
+    {
+      role: "Desarrollador Full Stack .NET & Blazor",
+      org: "Consorcio L. de los Santos", client: "Plataforma de administración de consorcios",
+      s: ym(2023,11), e: ym(2024,4), live: false, dateStr: "nov 2023 — abr 2024",
+      tags: ["Blazor WASM/Server","ASP.NET Core","Entity Framework","Azure DevOps","xUnit"],
+      bullets: [
+        "Plataforma web para administración de expensas, pagos, mantenimientos y reportes financieros en tiempo real.",
+        "Backend con ASP.NET Core + EF; Blazor WebAssembly y Server; CI/CD con Azure DevOps y TDD con xUnit."
+      ]
+    },
+    {
+      role: "Desarrollador Sistemas Embebidos · I+D+i",
+      org: "Silicon Misiones", client: "Proyecto Colmena Inteligente · IoT",
+      s: ym(2023,6), e: ym(2023,11), live: false, dateStr: "jun 2023 — nov 2023",
+      tags: ["C","C++","Arduino","ESP32-CAM","ESP8266","Python","Spring Boot","IoT"],
+      bullets: [
+        "Sistema embebido e IoT para monitoreo en tiempo real de colmenas: sensores, microcontroladores y backend.",
+        "Arduino, ESP8266 y ESP32-CAM con sensores BMP280/BME280; C/C++ y Python para procesamiento de datos.",
+        "API REST con Spring Boot + Hibernate; comunicación HTTP/FTP dispositivo↔backend."
+      ]
+    },
+    {
+      role: "Encargado local informático",
+      org: "Soluciones Informáticas", client: "Soporte y hardware · pymes y empresas",
+      s: ym(2021,1), e: ym(2022,3), live: false, dateStr: "ene 2021 — mar 2022",
+      tags: ["Hardware","Soporte","Atención al cliente","Diagnóstico"],
+      bullets: [
+        "Responsable del local: reparación y cambio de equipos, evaluación de hardware/software y soporte integral.",
+        "Reconocido con bonos por atención al cliente; fuerte capacidad de análisis y diagnóstico técnico."
+      ]
+    }
+  ];
+
+  function monthsBetween(a, b) { return Math.round((b - a) * 12); }
+  function durLabel(m) {
+    if (m < 12) return m + " mes" + (m === 1 ? "" : "es");
+    var y = Math.floor(m / 12), r = m % 12;
+    return y + " año" + (y === 1 ? "" : "s") + (r ? " " + r + "m" : "");
+  }
+
+  function buildAxis() {
+    var axis = $("#axis"); if (!axis) return;
+    for (var y = START; y <= 2026; y++) {
+      var s = document.createElement("span");
+      s.textContent = "'" + String(y).slice(2);
+      axis.appendChild(s);
+    }
+  }
+
+  function buildTrace() {
+    var trace = $("#trace"); if (!trace) return;
+    var total = NOW - START;
+    JOBS.forEach(function (job, i) {
+      var left = ((job.s - START) / total) * 100;
+      var width = ((job.e - job.s) / total) * 100;
+      var months = monthsBetween(job.s, job.e);
+
+      var row = document.createElement("div");
+      row.className = "span-row";
+      row.setAttribute("tabindex", "0");
+      row.setAttribute("role", "button");
+      row.setAttribute("aria-expanded", "false");
+
+      var idx = String(i + 1).padStart(2, "0");
+      var tagsMini = job.tags.slice(0, 5).join(" · ");
+
+      var tagsHtml = job.tags.map(function (t) {
+        var ai = /RAG|MCP|Agent|LangChain|Langfuse|LiteLLM|Eval|FastMCP|Claude|OpenAI|GPT|CrewAI|Conversational/i.test(t);
+        return '<span class="tag' + (ai ? " ai" : "") + '">' + t + '</span>';
+      }).join("");
+      var bulletsHtml = job.bullets.map(function (b) { return "<li>" + b + "</li>"; }).join("");
+
+      row.innerHTML =
+        '<div class="span-head">' +
+          '<div class="span-top">' +
+            '<span class="span-idx mono">' + idx + '</span>' +
+            '<span class="span-role">' + job.role + '</span>' +
+            '<span class="span-org">@' + job.org + '</span>' +
+            '<span class="span-date mono">' + job.dateStr + '</span>' +
+          '</div>' +
+          '<div class="span-bar-track">' +
+            '<div class="span-bar' + (job.live ? " live" : "") + '" style="left:' + left.toFixed(2) + '%; width:' + Math.max(width,2).toFixed(2) + '%; transition-delay:' + (i * 90) + 'ms;"></div>' +
+          '</div>' +
+          '<div class="span-meta">' +
+            '<span class="span-dur mono">⏱ ' + durLabel(months) + (job.live ? ' · <span style="color:var(--good)">en curso</span>' : "") + '</span>' +
+            '<span class="span-tags-mini mono">' + tagsMini + '</span>' +
+            '<span class="span-toggle mono">detalle <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 18 6-6-6-6"/></svg></span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="span-detail">' +
+          '<span class="span-client mono">' + job.client + '</span>' +
+          '<ul>' + bulletsHtml + '</ul>' +
+          '<div class="tags">' + tagsHtml + '</div>' +
+        '</div>';
+
+      function toggle() {
+        var open = row.classList.toggle("open");
+        row.setAttribute("aria-expanded", open ? "true" : "false");
+      }
+      row.addEventListener("click", toggle);
+      row.addEventListener("keydown", function (ev) {
+        if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); }
+      });
+      trace.appendChild(row);
+    });
+
+    // animate bars when trace scrolls in
+    var traceIO = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { trace.classList.add("in"); traceIO.disconnect(); }
+      });
+    }, { threshold: 0.1 });
+    traceIO.observe(trace);
+  }
+
+  /* ---------- SKILLS ---------- */
+  var SKILLS = [
+    { cat: "ia", title: "Agentes & LLMs", meta: "orchestration", items: ["Agentes","Subagentes","Orchestrator + sub-skills","Tool calling","Prompt engineering","Claude","GPT-4o","OpenAI","Azure AI"] },
+    { cat: "ia", title: "RAG & Retrieval", meta: "knowledge", items: ["RAG","Búsqueda semántica","Chunking","Grounding","Qdrant","LangChain"] },
+    { cat: "ia", title: "MCP & Protocolos", meta: "context", items: ["MCP","FastMCP","Servidores MCP","Tool servers"] },
+    { cat: "ia", title: "LLMOps & Evals", meta: "ai reliability", items: ["Evals","Langfuse","LiteLLM","Trazabilidad","Costo/tokens","Fine-tuning"] },
+    { cat: "backend", title: "Node & TypeScript", meta: "runtime", items: ["Node.js","TypeScript","NestJS","TypeORM","APIs REST"] },
+    { cat: "backend", title: "Python", meta: "ai + tooling", items: ["Python","FastAPI","Automatización","Data tooling","Uvicorn"] },
+    { cat: "backend", title: ".NET & Java", meta: "enterprise", items: [".NET / C#","ASP.NET Core","Entity Framework","Spring Boot","Hibernate"] },
+    { cat: "backend", title: "Arquitectura", meta: "design", items: ["Hexagonal","DDD","Microservicios","Clean Architecture","CQRS","SOLID"] },
+    { cat: "data", title: "Datos", meta: "storage", items: ["BigQuery","PostgreSQL","SQL Server","Redis","Qdrant"] },
+    { cat: "data", title: "Cloud & DevOps", meta: "infra", items: ["GCP","AWS (S3)","Azure","Docker","CI/CD","Azure DevOps"] },
+    { cat: "data", title: "Automatización", meta: "workflows", items: ["n8n","Make","CrewAI","Cloud Storage"] },
+    { cat: "obs", title: "Observabilidad", meta: "monitoring", items: ["Grafana","DataDog","New Relic","Kibana","OpenTelemetry","Langfuse"] },
+    { cat: "obs", title: "Integraciones Salud", meta: "healthtech", items: ["HL7","FHIR","WebServices","Tasy"] },
+    { cat: "practice", title: "Liderazgo & Ágil", meta: "delivery", items: ["Technical Lead","Scrum Master","Product Owner","Code reviews","Mentoring","Kanban"] },
+    { cat: "practice", title: "Análisis Funcional", meta: "product", items: ["Relevamiento","Historias de usuario","BPMN","UML","Docs técnicas"] }
+  ];
+  var CATS = [
+    { id: "all", label: "todo" },
+    { id: "ia", label: "IA / LLM" },
+    { id: "backend", label: "backend" },
+    { id: "data", label: "datos & cloud" },
+    { id: "obs", label: "observabilidad" },
+    { id: "practice", label: "prácticas" }
+  ];
+  function buildSkills() {
+    var fWrap = $("#filters"), grid = $("#skillsGrid");
+    if (!fWrap || !grid) return;
+    CATS.forEach(function (c, i) {
+      var b = document.createElement("button");
+      b.className = "filter"; b.textContent = c.label;
+      b.setAttribute("aria-pressed", i === 0 ? "true" : "false");
+      b.addEventListener("click", function () {
+        $$(".filter", fWrap).forEach(function (x) { x.setAttribute("aria-pressed", "false"); });
+        b.setAttribute("aria-pressed", "true");
+        $$(".skill-card", grid).forEach(function (card) {
+          var show = c.id === "all" || card.getAttribute("data-cat") === c.id;
+          card.classList.toggle("hide", !show);
+        });
+      });
+      fWrap.appendChild(b);
+    });
+    SKILLS.forEach(function (s) {
+      var card = document.createElement("div");
+      card.className = "skill-card"; card.setAttribute("data-cat", s.cat);
+      card.innerHTML =
+        '<h4>' + s.title + '</h4><span class="cat mono">// ' + s.meta + '</span>' +
+        '<div class="items">' + s.items.map(function (i) { return "<span>" + i + "</span>"; }).join("") + '</div>';
+      grid.appendChild(card);
+    });
+  }
+
+  /* ---------- CERTS ---------- */
+  var CERTS = [
+    { yr: "2025", nm: "Prompt Engineer · AI Engineer", org: "Platzi" },
+    { yr: "2025", nm: "Certificación LangChain · IA Engineer", org: "IA Engineer" },
+    { yr: "2025", nm: "FastAPI en Python · IA Engineer", org: "IA Engineer" },
+    { yr: "2025", nm: "Pacientes Digitales · Telemedicina & uHealth", org: "Salud digital" },
+    { yr: "2025", nm: "Gestión de Proyectos en Salud", org: "Hospital Italiano" },
+    { yr: "2025", nm: "Gestión de Equipos Ágiles", org: "Coursera · UC" },
+    { yr: "2024", nm: "Scrum Master Internacional", org: "ScrumStudy" },
+    { yr: "2024", nm: "Bootcamp DevOps con Azure", org: "Azure · Terraform · K8s" },
+    { yr: "2024", nm: "Líder de Proyecto", org: "Santander" },
+    { yr: "2024", nm: "HL7 · Portabilidad de salud", org: "HL7 v2/v3 · FHIR" },
+    { yr: "2024", nm: "Product Owner & Productos Ágiles", org: "Agile" },
+    { yr: "2024", nm: "Integración Continua con Jenkins", org: "CI/CD" },
+    { yr: "2024", nm: "Clean Architecture & CQRS", org: "Udemy" },
+    { yr: "2024", nm: "Gestión de Proyectos · PMBOK 7", org: "LinkedIn Learning" },
+    { yr: "2023", nm: "Seed for the Future", org: "Huawei LATAM · 5G salud rural" },
+    { yr: "2022", nm: "Oracle Next Education · Backend Java", org: "ONE · Spring Boot" },
+    { yr: "2021", nm: "Electrónica & Programación", org: "Polotic · Arduino/ESP" }
+  ];
+  function buildCerts() {
+    var list = $("#certList"); if (!list) return;
+    CERTS.forEach(function (c) {
+      var d = document.createElement("div");
+      d.className = "cert";
+      d.innerHTML = '<span class="yr mono">' + c.yr + '</span><span class="nm">' + c.nm + '<small>' + c.org + '</small></span>';
+      list.appendChild(d);
+    });
+  }
+
+  /* ---------- ASK MY CV ---------- */
+  var QA = [
+    { q: "¿En qué trabaja ahora?",
+      a: "En paralelo en dos frentes: como Sr Backend & AI Engineer en Datial dentro del equipo FPS de Mercado Libre (bots conversacionales, agentes y automatizaciones con Node.js, Python, GCP, Verdi y MCP), y como Backend Engineer + Technical Lead de I+D en Incubator, liderando soluciones GenAI para modernizar sistemas legacy (Rentas) y la iniciativa GEAR de Banco Galicia." },
+    { q: "¿Qué stack de IA maneja?",
+      a: "Agentes y subagentes, arquitecturas orchestrator + sub-skills, RAG con búsqueda semántica, MCP/FastMCP, tool calling y prompt engineering avanzado. En LLMOps: Langfuse para trazabilidad, LiteLLM como capa multi-modelo, evals de groundedness/precisión y control de tokens y costo. Modelos: Claude, GPT-4o, OpenAI, Azure AI." },
+    { q: "¿Experiencia con arquitecturas agentic?",
+      a: "Sí. Construyo Skills orquestadoras que rutean conversaciones e invocan sub-skills/subagentes como funciones, dividiendo responsabilidades en captura, razonamiento, planificación, ejecución, verificación y cierre. Aplico este patrón tanto en bots de RR.HH. en Mercado Libre como en agentes que analizan Oracle Forms y PL/SQL para migraciones asistidas." },
+    { q: "¿Por qué contratarlo?",
+      a: "Porque combina backend sólido (Node, NestJS, Python, .NET, hexagonal/DDD) con IA aplicada real y operación end-to-end hasta producción. No se queda en el prototipo: mide, observa y mejora con evals y LLMOps. Ya entrega valor en entornos de altísima escala como Mercado Libre y Banco Galicia." },
+    { q: "¿Formación y certificaciones?",
+      a: "Ingeniería en Sistemas de Información en etapa final (una materia + tesis sobre IA aplicada a análisis clínicos). +15 certificaciones recientes en Prompt Engineering, LangChain, FastAPI, Clean Architecture/CQRS, DevOps en Azure, HL7, Scrum Master y liderazgo ágil." },
+    { q: "¿Disponibilidad y ubicación?",
+      a: "Basado en Posadas, Misiones (Argentina). Trabaja de forma remota y está dispuesto a trasladarse a cualquier parte. Abierto a roles de AI Engineer, Backend Engineer y Technical Lead. Contacto: mauricio.lulusis99@gmail.com" }
+  ];
+  var chatBody = $("#chatBody"), suggest = $("#suggest"), chatBusy = false;
+  function addMsg(who, cls) {
+    var m = document.createElement("div");
+    m.className = "msg " + cls;
+    m.innerHTML = '<span class="who mono">' + who + '</span><div class="txt"></div>';
+    chatBody.appendChild(m);
+    return $(".txt", m);
+  }
+  function streamText(el, text, done) {
+    if (reduce) { el.textContent = text; if (done) done(); return; }
+    var caret = document.createElement("span"); caret.className = "caret";
+    el.appendChild(caret);
+    var i = 0;
+    // stream by words for a natural token feel
+    var words = text.split(" ");
+    function step() {
+      el.textContent = words.slice(0, i).join(" ");
+      el.appendChild(caret);
+      bumpTok(1);
+      i++;
+      chatBody.scrollTop = chatBody.scrollHeight;
+      if (i <= words.length) setTimeout(step, 22 + Math.random() * 34);
+      else { if (caret.parentNode) caret.parentNode.removeChild(caret); if (done) done(); }
+    }
+    step();
+  }
+  function send(userText, answerText) {
+    if (chatBusy) return;
+    chatBusy = true;
+    var u = addMsg("tú", "user"); u.textContent = userText;
+    chatBody.scrollTop = chatBody.scrollHeight;
+    setTimeout(function () {
+      var b = addMsg("agent", "bot");
+      streamText(b, answerText, function () { chatBusy = false; });
+    }, 260);
+  }
+  function ask(item) { send(item.q, item.a); }
+  function matchQA(text) {
+    var q = text.toLowerCase().replace(/[¿?¡!.,:;()"']/g, " ");
+    var words = q.split(/\s+/).filter(function (w) { return w.length >= 3; });
+    var best = null, score = 0;
+    QA.forEach(function (item) {
+      var hay = (item.q + " " + item.a).toLowerCase();
+      var s = 0;
+      words.forEach(function (w) { if (hay.indexOf(w) >= 0) s++; });
+      if (s > score) { score = s; best = item; }
+    });
+    if (best && score > 0) return best.a;
+    return "Buena pregunta. Puedo contarte sobre: su stack de IA (agentes, RAG, MCP, LLMOps), su experiencia en Mercado Libre y Banco Galicia, su backend (Node, Python, .NET), su formación o su disponibilidad. Probá una sugerencia de arriba 👆 o una palabra clave como \"rag\", \"agentes\", \"backend\" o \"contacto\".";
+  }
+  function askFree(text) {
+    var t = (text || "").trim();
+    if (!t) return;
+    send(t, matchQA(t));
+  }
+  function buildSuggest() {
+    if (!suggest) return;
+    QA.forEach(function (item) {
+      var q = document.createElement("button");
+      q.className = "q mono"; q.type = "button"; q.textContent = item.q;
+      q.addEventListener("click", function () { ask(item); });
+      suggest.appendChild(q);
+    });
+    var form = $("#chatForm"), input = $("#chatInput");
+    if (form && input) form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      if (chatBusy) return;
+      var v = input.value; input.value = "";
+      askFree(v);
+    });
+  }
+
+  /* ---------- helpers: escape + toast ---------- */
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  var toastWrap = null;
+  function toast(msg) {
+    if (!toastWrap) { toastWrap = document.createElement("div"); toastWrap.className = "toast-wrap"; document.body.appendChild(toastWrap); }
+    var t = document.createElement("div"); t.className = "toast";
+    t.innerHTML = '<span class="d">✔</span>' + escapeHtml(msg);
+    toastWrap.appendChild(t);
+    setTimeout(function () { t.style.transition = "opacity .4s, transform .4s"; t.style.opacity = "0"; t.style.transform = "translateY(8px)"; setTimeout(function () { if (t.parentNode) t.remove(); }, 400); }, 2300);
+  }
+
+  /* ---------- CONSOLE TABS ---------- */
+  function initConsoleTabs() {
+    var tabs = $$(".console-tab"), model = $("#consoleModel");
+    tabs.forEach(function (tab) {
+      tab.addEventListener("click", function () {
+        var name = tab.getAttribute("data-tab");
+        tabs.forEach(function (t) { t.setAttribute("aria-selected", "false"); });
+        tab.setAttribute("aria-selected", "true");
+        $$(".tabpane").forEach(function (p) { p.classList.toggle("active", p.getAttribute("data-pane") === name); });
+        if (model) model.textContent = name === "shell" ? "bash · trace-shell" : "claude · grounded";
+        var focusEl = name === "shell" ? $("#termInput") : $("#chatInput");
+        if (focusEl) setTimeout(function () { focusEl.focus(); }, 40);
+      });
+    });
+  }
+
+  /* ---------- INTERACTIVE TERMINAL ---------- */
+  function initTerminal() {
+    var body = $("#termBody"), form = $("#termForm"), input = $("#termInput");
+    if (!body || !form || !input) return;
+    var hist = [], hpos = 0;
+
+    function line(html) { var d = document.createElement("div"); d.className = "term-line"; d.innerHTML = html; body.appendChild(d); }
+    function out(html) { var d = document.createElement("div"); d.className = "term-out"; d.innerHTML = html; body.appendChild(d); }
+    function scroll() { body.scrollTop = body.scrollHeight; }
+    function k(s) { return '<span class="k">' + s + "</span>"; }
+
+    var HELP = [
+      ["whoami", "quién es Mauricio"],
+      ["now", "en qué trabaja hoy"],
+      ["experience", "historial de roles · alias: exp"],
+      ["skills [área]", "stack técnico · ej: skills ia"],
+      ["ai", "highlight de inteligencia artificial"],
+      ["stack", "herramientas favoritas"],
+      ["education", "formación · alias: edu"],
+      ["certs", "certificaciones"],
+      ["contact", "cómo contactarlo"],
+      ["hire", "por qué contratarlo · alias: why"],
+      ["ls / cat <archivo>", "explorar archivos"],
+      ["theme", "cambiar tema claro/oscuro"],
+      ["clear", "limpiar la consola"]
+    ];
+
+    var FILES = {
+      "about.md": "Mauricio N. Lulusis — AI Engineer & Backend Engineer. Ingeniero en Sistemas (etapa final, tesis en IA aplicada a salud). Combina backend sólido con IA aplicada y operación en producción.",
+      "experience.log": null, "skills.json": null, "contact.vcf": null,
+      "thesis.pdf": "Tesis (en desarrollo): IA aplicada a análisis clínicos — interoperabilidad HL7/FHIR, procesamiento de datos médicos y agentes inteligentes.",
+      ".secrets": "🔒 nice try. probá: " + '<span class="k">sudo hire</span>'
+    };
+
+    var CMD = {
+      help: function () { out(HELP.map(function (h) { return k(h[0]) + "  ·  " + h[1]; }).join("<br>")); },
+      whoami: function () { out("Mauricio Nicolás Lulusis · " + k("AI Engineer") + " · Backend Engineer · Technical Lead I+D<br>Posadas, Misiones, AR · remoto / dispuesto a trasladarse a cualquier parte."); },
+      now: function () { out(QA[0].a); },
+      experience: function () { out(JOBS.map(function (j) { return k("@" + j.org) + "  " + j.role + '  <span style="color:var(--faint)">' + j.dateStr + "</span>"; }).join("<br>")); },
+      exp: function () { CMD.experience(); },
+      skills: function (arg) {
+        var map = { ia: "ia", "ia/llm": "ia", llm: "ia", ai: "ia", backend: "backend", back: "backend", datos: "data", data: "data", cloud: "data", obs: "obs", observabilidad: "obs", practicas: "practice", "prácticas": "practice", practice: "practice" };
+        var filt = arg ? map[arg.toLowerCase()] : null;
+        var rows = SKILLS.filter(function (s) { return !filt || s.cat === filt; });
+        if (!rows.length) { out('<span class="err">área no encontrada.</span> opciones: ia · backend · data · obs · practice'); return; }
+        out(rows.map(function (s) { return k(s.title) + ": " + s.items.join(", "); }).join("<br>"));
+      },
+      ai: function () { out("Agentes & subagentes · orchestrator + sub-skills · tool calling<br>RAG + búsqueda semántica · MCP / FastMCP · LangChain · CrewAI<br>LLMOps: " + k("Langfuse") + " · " + k("LiteLLM") + " · evals · control de tokens/costo<br>Modelos: Claude · GPT-4o · OpenAI · Azure AI"); },
+      stack: function () { out("Node.js · TypeScript · NestJS · Python · FastAPI · .NET/C#<br>PostgreSQL · SQL Server · BigQuery · Redis · Qdrant<br>Docker · GCP · AWS · Azure · n8n · CI/CD"); },
+      education: function () { out(k("Ingeniería en Sistemas de Información") + " — Universidad Cuenca del Plata (2021→, etapa final + tesis)<br>Secundario Técnico Automotriz — Inst. Politécnico San Arnoldo Janssen (2012–2018)<br>Idiomas: Español (nativo) · Inglés (intermedio) · Portugués (intermedio)"); },
+      edu: function () { CMD.education(); },
+      certs: function () { out(CERTS.map(function (c) { return '<span style="color:var(--accent-2)">' + c.yr + "</span>  " + c.nm + '  <span style="color:var(--faint)">' + c.org + "</span>"; }).join("<br>")); },
+      contact: function () { out("email:     " + k("mauricio.lulusis99@gmail.com") + "<br>teléfono:  +54 376 416 0290<br>linkedin:  linkedin.com/in/mauriciolulusis<br>ubicación: Posadas, Misiones, AR · remoto / relocation"); },
+      hire: function () { out(QA[3].a); },
+      why: function () { CMD.hire(); },
+      ls: function () { out(Object.keys(FILES).map(function (f) { return f.indexOf(".secrets") === 0 ? '<span style="color:var(--faint)">' + f + "</span>" : k(f); }).join("&nbsp;&nbsp;&nbsp;")); },
+      cat: function (arg) {
+        if (!arg) { out('<span class="err">uso:</span> cat &lt;archivo&gt; · probá ' + k("ls")); return; }
+        if (!(arg in FILES)) { out('<span class="err">cat: ' + escapeHtml(arg) + ": no existe</span>"); return; }
+        if (arg === "experience.log") return CMD.experience();
+        if (arg === "skills.json") return CMD.skills();
+        if (arg === "contact.vcf") return CMD.contact();
+        out(FILES[arg]);
+      },
+      theme: function () { if (tt) tt.click(); out("tema → " + k(currentTheme())); },
+      clear: function () { body.innerHTML = ""; },
+      sudo: function (arg) {
+        if ((arg || "").toLowerCase() === "hire") {
+          out(k("[sudo]") + " permiso concedido ✔<br>iniciando protocolo de contratación…<br>» un AI Engineer que entrega en producción. escribime: " + k("mauricio.lulusis99@gmail.com"));
+          tokenRain(); toast("🎉 protocolo de contratación iniciado");
+        } else { out('<span class="err">sudo:</span> se requiere una misión. probá ' + k("sudo hire")); }
+      }
+    };
+    var NAMES = ["help", "whoami", "now", "experience", "exp", "skills", "ai", "stack", "education", "edu", "certs", "contact", "hire", "why", "ls", "cat", "theme", "clear", "sudo"];
+
+    function run(raw) {
+      var input2 = (raw || "").trim();
+      line('<span class="p">mauricio@trace:~$</span> ' + escapeHtml(input2 || ""));
+      if (!input2) { scroll(); return; }
+      var parts = input2.split(/\s+/);
+      var cmd = parts[0].toLowerCase(), arg = parts.slice(1).join(" ");
+      if (CMD[cmd]) { try { CMD[cmd](arg); } catch (e) { out('<span class="err">error interno.</span>'); } }
+      else { out('<span class="err">comando no encontrado:</span> ' + escapeHtml(cmd) + " · escribí " + k("help")); }
+      scroll();
+    }
+
+    out(k("trace-shell") + " v1.0 — escribí " + k("help") + " y Enter. atajos: " + k("↑↓") + " historial · " + k("Tab") + " autocompletar. probá " + k("sudo hire") + " 😉");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var v = input.value;
+      run(v);
+      if (v.trim()) hist.push(v);
+      hpos = hist.length; input.value = "";
+    });
+    input.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowUp") { e.preventDefault(); if (hist.length) { hpos = Math.max(0, hpos - 1); input.value = hist[hpos] || ""; } }
+      else if (e.key === "ArrowDown") { e.preventDefault(); if (hist.length) { hpos = Math.min(hist.length, hpos + 1); input.value = hist[hpos] || ""; } }
+      else if (e.key === "Tab") {
+        e.preventDefault();
+        var pre = input.value.toLowerCase().split(/\s+/)[0];
+        if (!pre) return;
+        var m = NAMES.filter(function (n) { return n.indexOf(pre) === 0; });
+        if (m.length) input.value = m[0] + " ";
+      }
+    });
+    body.addEventListener("click", function () { input.focus(); });
+  }
+
+  /* ---------- TOKEN RAIN (easter egg) ---------- */
+  function tokenRain() {
+    if (reduce) { toast("agentic mode ✔"); return; }
+    var c = document.createElement("canvas"); c.className = "rain"; document.body.appendChild(c);
+    var x = c.getContext("2d"), dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W = window.innerWidth, H = window.innerHeight;
+    c.width = W * dpr; c.height = H * dpr; x.setTransform(dpr, 0, 0, dpr, 0, 0);
+    var words = ["agent", "rag", "mcp", "llm", "token", "eval", "tool", "prompt", "node", "python", "docker", "gcp", "claude", "langfuse", "subagent", "context", "vector", "span", "trace", "skill"];
+    var cols = Math.max(6, Math.floor(W / 92)), drops = [];
+    for (var i = 0; i < cols; i++) drops.push({ x: i * 92 + Math.random() * 40, y: Math.random() * -H, s: 2 + Math.random() * 3.5, w: words[(Math.random() * words.length) | 0] });
+    var start = performance.now();
+    function frame(now) {
+      var t = now - start;
+      x.clearRect(0, 0, W, H);
+      x.font = '13px "JetBrains Mono", ui-monospace, monospace';
+      drops.forEach(function (d) {
+        x.fillStyle = Math.random() < 0.16 ? "#4FD6C9" : "#FFB454";
+        x.globalAlpha = 0.85; x.fillText(d.w, d.x, d.y); d.y += d.s;
+        if (d.y > H) { d.y = Math.random() * -160; d.w = words[(Math.random() * words.length) | 0]; }
+      });
+      x.globalAlpha = 1;
+      if (t < 4200) requestAnimationFrame(frame);
+      else { c.style.transition = "opacity .6s"; c.style.opacity = "0"; setTimeout(function () { if (c.parentNode) c.remove(); }, 600); }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- CLIPBOARD · SPOTLIGHT · KONAMI ---------- */
+  function initClipboard() {
+    var chip = $("#emailChip");
+    if (chip) chip.addEventListener("click", function (e) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        e.preventDefault();
+        navigator.clipboard.writeText("mauricio.lulusis99@gmail.com")
+          .then(function () { toast("email copiado ✔"); })
+          .catch(function () { location.href = chip.href; });
+      }
+    });
+  }
+  function initSpotlight() {
+    if (reduce) return;
+    var glow = document.createElement("div"); glow.className = "cursor-glow";
+    document.body.appendChild(glow);
+    window.addEventListener("pointermove", function (e) {
+      if (e.pointerType === "touch") return;
+      glow.style.left = e.clientX + "px"; glow.style.top = e.clientY + "px";
+    }, { passive: true });
+  }
+  function initKonami() {
+    var seq = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65], pos = 0;
+    document.addEventListener("keydown", function (e) {
+      if (cmdk && cmdk.classList.contains("open")) return;
+      var t = e.target;
+      if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA")) return;
+      if (e.keyCode === seq[pos]) { pos++; if (pos === seq.length) { pos = 0; tokenRain(); toast("🎉 modo agentic desbloqueado"); } }
+      else { pos = (e.keyCode === seq[0]) ? 1 : 0; }
+    });
+  }
+
+  /* ---------- CANVAS AGENT GRAPH ---------- */
+  var graph = null;
+  function initGraph() {
+    var canvas = $("#graph"); if (!canvas) return null;
+    var ctx = canvas.getContext("2d");
+    var W = 0, H = 0, dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var colors = {};
+    var hover = -1, drag = -1, dragMoved = false;
+    function readColors() {
+      var cs = getComputedStyle(document.documentElement);
+      colors.accent = cs.getPropertyValue("--accent").trim() || "#FFB454";
+      colors.accent2 = cs.getPropertyValue("--accent-2").trim() || "#4FD6C9";
+      colors.line = cs.getPropertyValue("--line").trim() || "#232C40";
+      colors.muted = cs.getPropertyValue("--muted").trim() || "#7E889E";
+      colors.text = cs.getPropertyValue("--text").trim() || "#E7EBF3";
+    }
+    // topology (relative 0..1)
+    var nodes = [
+      { x: 0.5, y: 0.5, r: 26, label: "orchestrator", hub: true },
+      { x: 0.5, y: 0.16, r: 13, label: "router" },
+      { x: 0.82, y: 0.32, r: 13, label: "rag" },
+      { x: 0.86, y: 0.68, r: 13, label: "planner" },
+      { x: 0.5, y: 0.85, r: 13, label: "codegen" },
+      { x: 0.14, y: 0.68, r: 13, label: "evals" },
+      { x: 0.18, y: 0.32, r: 13, label: "memory" },
+      { x: 0.5, y: 0.02, r: 8, label: "mcp", tool: true },
+      { x: 0.97, y: 0.5, r: 8, label: "tools", tool: true },
+      { x: 0.5, y: 0.98, r: 8, label: "bigquery", tool: true },
+      { x: 0.03, y: 0.5, r: 8, label: "langfuse", tool: true }
+    ];
+    var edges = [
+      [0,1],[0,2],[0,3],[0,4],[0,5],[0,6],
+      [1,7],[2,8],[4,9],[6,10]
+    ];
+    // pulses travel along edges
+    var pulses = edges.map(function (e, i) {
+      return { e: e, t: Math.random(), speed: 0.004 + Math.random() * 0.006 };
+    });
+
+    function resize() {
+      var rect = canvas.getBoundingClientRect();
+      W = rect.width; H = rect.height;
+      canvas.width = W * dpr; canvas.height = H * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    function P(n) { return { x: n.x * W, y: n.y * H }; }
+
+    var t0 = performance.now();
+    function draw(now) {
+      var time = (now - t0) / 1000;
+      ctx.clearRect(0, 0, W, H);
+      // edges
+      edges.forEach(function (e) {
+        var a = P(nodes[e[0]]), b = P(nodes[e[1]]);
+        var hot = (hover === e[0] || hover === e[1]);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y);
+        ctx.strokeStyle = hot ? colors.accent : colors.line; ctx.lineWidth = hot ? 1.8 : 1;
+        ctx.globalAlpha = hot ? 0.9 : 1; ctx.stroke(); ctx.globalAlpha = 1;
+      });
+      // pulses (persistent loop + temp click bursts)
+      for (var pi = pulses.length - 1; pi >= 0; pi--) {
+        var p = pulses[pi];
+        if (!reduce) p.t += p.speed;
+        if (p.temp) { if (p.t > 1 || p.t < 0) { pulses.splice(pi, 1); continue; } }
+        else { if (p.t > 1) p.t = 0; if (p.t < 0) p.t = 1; }
+        var pa = P(nodes[p.e[0]]), pb = P(nodes[p.e[1]]);
+        var px = pa.x + (pb.x - pa.x) * p.t, py = pa.y + (pb.y - pa.y) * p.t;
+        var rad = p.temp ? 9 : 6;
+        var g = ctx.createRadialGradient(px, py, 0, px, py, rad);
+        g.addColorStop(0, p.temp ? colors.accent2 : colors.accent); g.addColorStop(1, "transparent");
+        ctx.fillStyle = g; ctx.beginPath(); ctx.arc(px, py, rad, 0, Math.PI * 2); ctx.fill();
+      }
+      // nodes
+      nodes.forEach(function (n, i) {
+        var p = P(n);
+        var pulse = reduce ? 0 : Math.sin(time * 1.6 + i) * 1.5;
+        var r = n.r + pulse;
+        if (i === hover) r += 5;
+        if (n.hub) {
+          var gg = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, r * 2.6);
+          gg.addColorStop(0, hexA(colors.accent, 0.28)); gg.addColorStop(1, "transparent");
+          ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(p.x, p.y, r * 2.6, 0, Math.PI * 2); ctx.fill();
+        }
+        ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = n.hub ? colors.accent : (n.tool ? colors.muted : colors.accent2);
+        ctx.globalAlpha = n.tool ? 0.55 : 1;
+        ctx.fill(); ctx.globalAlpha = 1;
+        if (n.hub) {
+          ctx.fillStyle = "#1a1205"; ctx.font = "700 10px " + monoFont();
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          ctx.fillText("core", p.x, p.y);
+        }
+        // labels
+        if (!n.hub) {
+          ctx.fillStyle = i === hover ? colors.accent : colors.muted;
+          ctx.font = (i === hover ? "700 " : "") + "10px " + monoFont();
+          ctx.textAlign = "center"; ctx.textBaseline = "middle";
+          var ly = p.y + (n.y < 0.5 ? -r - 9 : r + 11);
+          ctx.fillText(n.label, p.x, ly);
+        }
+      });
+      if (!reduce) raf = requestAnimationFrame(draw);
+    }
+    function monoFont() { return '"JetBrains Mono", ui-monospace, Consolas, monospace'; }
+    function hexA(hex, a) {
+      hex = hex.replace("#", "");
+      if (hex.length === 3) hex = hex.split("").map(function (c){return c+c;}).join("");
+      var r = parseInt(hex.slice(0,2),16), g = parseInt(hex.slice(2,4),16), b = parseInt(hex.slice(4,6),16);
+      if (isNaN(r)) return "rgba(255,180,84," + a + ")";
+      return "rgba(" + r + "," + g + "," + b + "," + a + ")";
+    }
+
+    function render() { draw(performance.now()); }
+    function nodeAt(mx, my) {
+      for (var i = 0; i < nodes.length; i++) { var q = P(nodes[i]); var dx = mx - q.x, dy = my - q.y; var rr = nodes[i].r + 9; if (dx * dx + dy * dy <= rr * rr) return i; }
+      return -1;
+    }
+    function rel(ev) { var r = canvas.getBoundingClientRect(); return { x: ev.clientX - r.left, y: ev.clientY - r.top }; }
+    function firePulse(idx) {
+      edges.forEach(function (e) {
+        if (e[0] === idx) pulses.push({ e: e, t: 0, speed: 0.03, temp: true });
+        else if (e[1] === idx) pulses.push({ e: [e[1], e[0]], t: 0, speed: 0.03, temp: true });
+      });
+      if (reduce) render();
+    }
+    canvas.addEventListener("pointermove", function (ev) {
+      var m = rel(ev);
+      if (drag >= 0) {
+        nodes[drag].x = Math.max(0.05, Math.min(0.97, m.x / W));
+        nodes[drag].y = Math.max(0.04, Math.min(0.96, m.y / H));
+        dragMoved = true; if (reduce) render();
+      } else {
+        var h = nodeAt(m.x, m.y);
+        if (h !== hover) { hover = h; canvas.style.cursor = h >= 0 ? "grab" : "default"; if (reduce) render(); }
+      }
+    });
+    canvas.addEventListener("pointerdown", function (ev) {
+      var m = rel(ev); var h = nodeAt(m.x, m.y);
+      if (h >= 0) { drag = h; dragMoved = false; canvas.style.cursor = "grabbing"; try { canvas.setPointerCapture(ev.pointerId); } catch (e) {} }
+    });
+    canvas.addEventListener("pointerup", function (ev) {
+      if (drag >= 0 && !dragMoved) firePulse(drag);
+      drag = -1; canvas.style.cursor = hover >= 0 ? "grab" : "default";
+      try { canvas.releasePointerCapture(ev.pointerId); } catch (e) {}
+    });
+    canvas.addEventListener("pointerleave", function () { hover = -1; if (drag < 0) canvas.style.cursor = "default"; if (reduce) render(); });
+
+    var raf = null;
+    readColors(); resize();
+    if (reduce) { draw(performance.now()); }
+    else { raf = requestAnimationFrame(draw); }
+
+    var ro = new ResizeObserver(function () { resize(); if (reduce) draw(performance.now()); });
+    ro.observe(canvas);
+
+    return {
+      recolor: function () { readColors(); if (reduce) draw(performance.now()); },
+      subCount: nodes.filter(function (n){ return !n.hub && !n.tool; }).length
+    };
+  }
+
+  /* ---------- COMMAND PALETTE ---------- */
+  var CMDS = [
+    { icon: "◇", label: "Ir a Perfil", meta: "sección", act: function(){ go("#perfil"); } },
+    { icon: "◇", label: "Hablar con mi CV", meta: "chat", act: function(){ go("#chat"); } },
+    { icon: "◇", label: "Ver Experiencia", meta: "trace", act: function(){ go("#experiencia"); } },
+    { icon: "◇", label: "Ver Skills", meta: "stack", act: function(){ go("#skills"); } },
+    { icon: "◇", label: "Ver Arquitectura", meta: "design", act: function(){ go("#arquitectura"); } },
+    { icon: "◇", label: "Ver Formación", meta: "edu", act: function(){ go("#formacion"); } },
+    { icon: "✉", label: "Enviar email", meta: "acción", act: function(){ location.href = "mailto:mauricio.lulusis99@gmail.com"; } },
+    { icon: "in", label: "Abrir LinkedIn", meta: "acción", act: function(){ window.open("https://www.linkedin.com/in/mauriciolulusis/","_blank"); } },
+    { icon: "☎", label: "Llamar", meta: "acción", act: function(){ location.href = "tel:+543764160290"; } },
+    { icon: "◐", label: "Cambiar tema", meta: "acción", act: function(){ if (tt) tt.click(); } }
+  ];
+  var cmdk = $("#cmdk"), cmdkInput = $("#cmdkInput"), cmdkList = $("#cmdkList"), cmdkActive = 0, cmdkFiltered = CMDS.slice();
+  function go(hash) { closeCmdk(); var el = $(hash); if (el) el.scrollIntoView({ behavior: reduce ? "auto" : "smooth" }); }
+  function renderCmdk() {
+    cmdkList.innerHTML = "";
+    cmdkFiltered.forEach(function (c, i) {
+      var d = document.createElement("div");
+      d.className = "cmdk-item" + (i === cmdkActive ? " active" : "");
+      d.innerHTML = '<span class="ci">' + c.icon + '</span><span>' + c.label + '</span><span class="cm">' + c.meta + '</span>';
+      d.addEventListener("click", function () { c.act(); });
+      d.addEventListener("mousemove", function () { cmdkActive = i; updateActive(); });
+      cmdkList.appendChild(d);
+    });
+  }
+  function updateActive() {
+    $$(".cmdk-item", cmdkList).forEach(function (el, i) { el.classList.toggle("active", i === cmdkActive); });
+  }
+  function openCmdk() {
+    cmdk.classList.add("open"); cmdkInput.value = ""; cmdkFiltered = CMDS.slice(); cmdkActive = 0; renderCmdk();
+    setTimeout(function () { cmdkInput.focus(); }, 30);
+  }
+  function closeCmdk() { cmdk.classList.remove("open"); }
+  function filterCmdk() {
+    var q = cmdkInput.value.toLowerCase();
+    cmdkFiltered = CMDS.filter(function (c) { return (c.label + " " + c.meta).toLowerCase().indexOf(q) >= 0; });
+    cmdkActive = 0; renderCmdk();
+  }
+  if (cmdkInput) {
+    cmdkInput.addEventListener("input", filterCmdk);
+    cmdkInput.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowDown") { e.preventDefault(); cmdkActive = Math.min(cmdkActive + 1, cmdkFiltered.length - 1); updateActive(); }
+      else if (e.key === "ArrowUp") { e.preventDefault(); cmdkActive = Math.max(cmdkActive - 1, 0); updateActive(); }
+      else if (e.key === "Enter") { e.preventDefault(); if (cmdkFiltered[cmdkActive]) cmdkFiltered[cmdkActive].act(); }
+    });
+  }
+  var cmdkOpenBtn = $("#cmdkOpen");
+  if (cmdkOpenBtn) cmdkOpenBtn.addEventListener("click", openCmdk);
+  if (cmdk) cmdk.addEventListener("click", function (e) { if (e.target === cmdk) closeCmdk(); });
+  document.addEventListener("keydown", function (e) {
+    if ((e.metaKey || e.ctrlKey) && (e.key === "k" || e.key === "K")) { e.preventDefault(); cmdk.classList.contains("open") ? closeCmdk() : openCmdk(); }
+    else if (e.key === "Escape") closeCmdk();
+  });
+
+  /* ---------- TO TOP ---------- */
+  var toTop = $("#toTop");
+  window.addEventListener("scroll", function () {
+    if (toTop) toTop.classList.toggle("show", window.scrollY > 700);
+  }, { passive: true });
+  if (toTop) toTop.addEventListener("click", function () { window.scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" }); });
+
+  /* ---------- BOOT ---------- */
+  function boot() {
+    buildAxis(); buildTrace(); buildSkills(); buildCerts(); buildSuggest();
+    initConsoleTabs(); initTerminal();
+    initClipboard(); initSpotlight(); initKonami();
+    graph = initGraph();
+    if (graph) { var sc = $("#subCount"); if (sc) sc.textContent = graph.subCount; }
+    runHero();
+  }
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+  else boot();
+})();
+</script>
+
+</body>
+</html>
