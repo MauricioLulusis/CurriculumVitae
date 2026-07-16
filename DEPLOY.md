@@ -12,7 +12,39 @@ Curriculum vitae/
 
 ---
 
-## ✅ Recomendado: TODO dentro de Vercel (comprar dominio + deploy)
+## ⭐ Camino que estamos usando: GitHub → Vercel  (RECOMENDADO)
+
+✅ Ya está: el CV está en GitHub → https://github.com/MauricioLulusis/CurriculumVitae (rama `main`).
+Con esto, cada `git push` va a redesplegar el sitio en Vercel automáticamente.
+
+### 1) Crear cuenta en Vercel
+https://vercel.com → **Sign Up → Continue with GitHub** → autorizá con la cuenta **MauricioLulusis**.
+
+### 2) Importar el repo
+1. Dashboard → **Add New… → Project**.
+2. En *Import Git Repository* buscá **CurriculumVitae** → **Import**.
+   *(Si no aparece: "Adjust GitHub App Permissions" → dale acceso al repo.)*
+3. **Framework Preset: Other** · Root Directory: `./` · sin build command.
+4. **Deploy** → en ~20s queda online en `https://curriculumvitae-xxxx.vercel.app`.
+
+### 3) Comprar el dominio en Vercel
+1. Proyecto → **Settings → Domains**.
+2. Escribí `mauriciolulusiscv.com` → si está libre, **Buy** (≈ US$15-20/año).
+3. Pagás → Vercel lo registra, lo asigna al proyecto y configura **DNS + HTTPS solos**. ✅
+
+### 4) Actualizar el sitio en el futuro
+```bash
+cd "C:\Users\mauri\OneDrive\Escritorio\Curriculum vitae"
+# (editás index.html)
+git add -A
+git commit -m "update cv"
+git push
+```
+→ Vercel redespliega solo. 🚀
+
+---
+
+## ✅ Alternativa: TODO dentro de Vercel sin GitHub (comprar dominio + deploy)
 
 Sí — Vercel vende dominios. Comprás y publicás en el mismo lugar, y el **DNS + HTTPS quedan
 configurados solos** (no tocás ningún registro a mano). Es lo más simple posible.
